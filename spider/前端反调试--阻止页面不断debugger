@@ -1,0 +1,9 @@
+每次在断点处停下来的时候页面都会跳到source这个tab页面，也能够看到他的debugger的代码，其实他的实现很简单，只有这一行代码
+(function() {var a = new Date(); debugger; return new Date() - a > 100;}())
+
+1、禁止所有断点：
+在Chrome控制台的Source Tab页点击Deactivate breakpoints按钮，这样会禁止所有断点，不推荐
+
+2、禁止单个断点：
+  具名函数：可以直接拿覆盖
+  匿名函数：找到debugger行，右键选择neverpause here 禁止单个断点
