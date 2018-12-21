@@ -1,0 +1,6 @@
+一、os下常用函数
+1、os.makedirs(path) 创建文件夹
+  if not os.path.exists(downloadPath):
+    os.makedirs(downloadPath)
+
+2、os.remove(pathorfile) 删除文件夹
