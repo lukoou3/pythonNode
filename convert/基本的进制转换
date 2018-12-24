@@ -1,0 +1,69 @@
+一、十进制与其它进制之间的转换
+1、十进制转其它进制
+hex()
+转换一个整数对象为十六进制的字符串
+>>> hex(18)
+'0x12'
+
+oct()
+转换一个整数对象为八进制的字符串
+>>> oct(8)
+'0o10'
+
+bin()
+转换一个整数对象为二进制字符串
+>>> bin(255)
+'0b11111111'
+
+2、其它进制转十进制
+16进制转10进制
+>>> int('10', 16)
+>>> int('0x10', 16)
+16
+
+8进制转10进制
+>>> int('0o10', 8)
+>>> int('10', 8)
+8
+
+2进制转10进制
+>>> int('0b1010', 2)
+>>> int('1010', 2)
+10
+
+二、整数与ASCII之间的转换
+1、chr()
+转换一个[0, 255]之间的整数为对应的ASCII字符
+>>> chr(65)
+'A'
+2、ord()
+将一个ASCII字符转换为对应整数
+>>> ord('A')
+65
+
+事例：
+a、一个ASCII和十六进制转换器：
+class Converter(object):
+    @staticmethod
+    def to_ascii(h):
+        list_s = []
+        for i in range(0, len(h), 2):
+            list_s.append(chr(int(h[i:i+2], 16)))
+        return ''.join(list_s)
+
+    @staticmethod
+    def to_hex(s):
+        list_h = []
+        for c in s:
+            list_h.append(str(hex(ord(c))[2:]))
+        return ''.join(list_h)
+print(Converter.to_hex("Hello World!"))
+print(Converter.to_ascii("48656c6c6f20576f726c6421"))
+
+b、转换爬取的网页中的eval("\x24\x28\x27\x23\x68\x64\x4d\x64\x35\x27\x29\x2e\x76\x61\x6c\x28\x27\x32\x35\x64\x65\x37\x66\x39\x61\x32\x31\x39\x63\x39\x30\x37\x36\x30\x36\x39\x39\x61\x36\x39\x38\x65\x37\x34\x64\x61\x65\x65\x33\x27\x29\x3b");
+def hexs_to_ascii_str(self,hexs):
+    """#16进制转换ascii对应的str"""
+    ascii_strs = [chr(int(hex, 16)) for hex in hexs]
+    return "".join(ascii_strs)
+md5_match = re.search(r"eval\([^\(]+?\)", response.text)
+js_str = self.hexs_to_ascii_str(md5_match.group()[6:-2].split(r"\x")[1:])
