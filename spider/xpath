@@ -1,0 +1,8 @@
+https://blog.csdn.net/gongbing798930123/article/details/78955597
+https://blog.csdn.net/u013332124/article/details/80621638
+https://www.jianshu.com/p/1575db75670f
+一、基本用法
+from lxml import etree
+html = etree.HTML(response.text)
+links = html.xpath("//ul[@class='mod-play-list play-list-num  tab-panel tab-1']/li/a")
+
