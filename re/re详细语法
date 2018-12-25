@@ -104,7 +104,7 @@ b = re.compile(r"\d+\.\d*")
 >>> someRegexValue = re.compile('foo', re.IGNORECASE | re.DOTALL | re.VERBOSE)
 
 三、re模块主要的功能函数：
-常用的功能函数包括：compile、search、match、split、findall（finditer）、sub（subn）、escape
+常用的功能函数包括：compile、search、match、split、findall（finditer）、sub（subn）
 
 1、search
 re.search(pattern, string[, flags])
@@ -244,3 +244,48 @@ finditer(string[, pos[, endpos]])
 ...
 hello
 world
+
+8、Match object对象
+The result of re.match() and re.search().Match objects always have a boolean value of True.
+上面的函数中，只有match、search返回Match object，其他的函数没有
+
+事例：
+a、
+pat = re.compile(r'www\.(.*)\.(.*)')       #用()表示1个组，2个组
+m = pat.match('www.dxy.com')
+m.group()                                  #默认为0，表示匹配整个字符串   
+'www.dxy.com'
+m.group(1)                                 #返回给定组1匹配的子字符串
+'dxy'
+m.group(2)
+'com'
+
+
+b、
+prog = re.compile(r'(?P<tagname>abc)(.*)(?P=tagname)')
+result1 = prog.match('abclfjlad234sjldabc')
+print(result1)
+print(result1.groups())
+print result1.group('tagname')
+print(result1.group(2))
+print(result1.groupdict())
+ 
+>>>
+<_sre.SRE_Match object at 0x027B6CC8>
+('abc', 'lfjlad234sjld')
+abc
+lfjlad234sjld
+{'tagname': 'abc'}
+ 
+解释：
+我们可以看到result1已经由字符串转换成了一个正则对象。
+resule.groups()可以查看出来所有匹配到的数据，每个()是一个元素，最终返回一个tuple
+group()既可以通过下标（从1开始）的方式访问，也可以通过分组名进行访问。
+groupdict只能显示有分组名的数据
+ 
+group([group1, …]): 
+获得一个或多个分组截获的字符串；指定多个参数时将以元组形式返回。group1可以使用编号也可以使用别名；编号0代表整个匹配的子串；不填写参数时，返回group(0)；没有截获字符串的组返回None；截获了多次的组返回最后一次截获的子串。
+groups([default]): 
+以元组形式返回全部分组截获的字符串。相当于调用group(1,2,…last)。default表示没有截获字符串的组以这个值替代，默认为None。
+groupdict([default]): 
+返回以有别名的组的别名为键、以该组截获的子串为值的字典，没有别名的组不包含在内。default含义同上。
