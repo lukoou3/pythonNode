@@ -195,6 +195,10 @@ print(p.sub('num','one word two words three words apple',2))
  #输出结果：
 num word num words three words apple
 
+re.sub(r'www\.(.*)\..{3}',r'\1','hello,www.dxy.com')
+'hello,dxy'
+# r'1' 是第一组的意思
+#通过正则匹配找到符合规则的"www.dxy.com" ，取得 组1字符串 去替换 整个匹配。
 
 如果repl是个函数，每次pattern被匹配到的时候，都会被调用一次，传入一个匹配到的MatchObject对象，需要返回一个字符串，在匹配到的位置，就填入返回的字符串。
 >>> def dashrepl(matchobj):
