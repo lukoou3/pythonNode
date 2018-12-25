@@ -102,3 +102,141 @@ b = re.compile(r"\d+\.\d*")
 >>> someRegexValue = re.compile('foo', re.IGNORECASE | re.DOTALL)
 使用第二个参数的全部3 个选项，看起来像这样：
 >>> someRegexValue = re.compile('foo', re.IGNORECASE | re.DOTALL | re.VERBOSE)
+
+三、re模块主要的功能函数：
+常用的功能函数包括：compile、search、match、split、findall（finditer）、sub（subn）、escape
+
+1、search
+re.search(pattern, string[, flags])
+search (string[, pos[, endpos]])
+作用：把正则表达式语法转化成正则表达式对象，可以用它进行匹配 match()，search()以及其他方法
+
+flags定义包括：
+re.I：忽略大小写
+re.L：表示特殊字符集 \w, \W, \b, \B, \s, \S 依赖于当前环境
+re.M：多行模式
+re.S：’ . ’并且包括换行符在内的任意字符（注意：’ . ’不包括换行符）
+re.U： 表示特殊字符集 \w, \W, \b, \B, \d, \D, \s, \S 依赖于 Unicode 字符属性数据库
+
+所以re.compile()如果在单个程序中多次使用表达式，则使用并保存生成的正则表达式对象以便重用将会更有效。
+
+例子：
+prog = re.compile(pattern)
+result = prog.match(string)
+相当于：
+result = re.match(pattern, string)
+
+2、search
+re.search(pattern, string[, flags])
+search (string[, pos[, endpos]])
+作用：在字符串中查找匹配正则表达式模式的第一个位置，返回 MatchObject 的实例，如果没有找到匹配的位置，则返回 None。
+
+>>> re.search(r'[ab]',"aaaasdfg")
+<_sre.SRE_Match object; span=(0, 1), match='a'>
+
+3、match
+re.match(pattern, string[, flags])
+match(string[, pos[, endpos]])
+作用：match() 函数只在字符串的开始位置尝试匹配正则表达式，也就是只报告从位置 0 开始的匹配情况，而 search() 函数是扫描整个字符串来查找匹配。如果想要搜索整个字符串来寻找匹配，应当用 search()。
+请注意，即使在MULTILINE模式下，re.match()只会匹配字符串的开头，而不是每行的开头。
+
+>>> re.match("a", "abcdef")
+<_sre.SRE_Match object; span=(0, 1), match='a'>
+
+
+search（）与match（）的区别
+match()只匹配字符串的开头！
+
+看例子：
+>>> re.match("c", "abcdef")    # No match
+>>> re.search("c", "abcdef")   # Match
+<_sre.SRE_Match object; span=(2, 3), match='c'>
+
+以正值开始的正则表达式’^’可用于search()限制字符串开始处的匹配：
+
+>>> re.match("c", "abcdef")    # No match
+>>> re.search("^c", "abcdef")  # No match
+>>> re.search("^a", "abcdef")  # Match
+<_sre.SRE_Match object; span=(0, 1), match='a'>
+
+但是请注意，在MULTILINE模式中，match()只匹配字符串的开头，而使用search()正则表达式’^’匹配每行的开头。
+>>> re.match('X', 'A\nB\nX', re.MULTILINE)  # No match
+>>> re.search('^X', 'A\nB\nX', re.MULTILINE)  # Match
+<_sre.SRE_Match object; span=(4, 5), match='X'>
+
+4、findall
+re.findall(pattern, string[, flags])
+findall(string[, pos[, endpos]])
+作用：返回字符串中模式的所有非重叠匹配项，作为字符串列表。 字符串从左到右扫描，匹配按找到的顺序返回。 如果模式中存在一个或多个组，则返回组的列表; 如果该模式有多个组，这将是一个元组列表。
+
+>>> re.findall(r'a',"aboisdhiajhsasa")
+['a', 'a', 'a', 'a']
+#这个返回的就是元组的列表
+>>> re.findall('(\d+)\.(\d+)\.(\d+)\.(\d+)', 'My IP is 192.168.0.2, and your is
+192.168.0.3.')
+[('192', '168', '0', '2'), ('192', '168', '0', '3')]
+
+作为findall()方法的返回结果的总结，请记住下面两点：
+1．如果调用在一个没有分组的正则表达式上，例如\d\d\d-\d\d\d-\d\d\d\d，方法
+findall()将返回一个匹配字符串的列表，例如['415-555-9999', '212-555-0000']。
+2．如果调用在一个有分组的正则表达式上，例如(\d\d\d)-(\d\d\d)-(\d\d\d\d)，方
+法findall()将返回一个字符串的元组的列表（每个分组对应一个字符串），例如[('415',
+'555', '1122'), ('212', '555', '0000')]。
+
+5、sub
+re.sub(pattern, repl, string[, count, flags])
+sub(repl, string[, count=0])
+说明：在字符串 string 中找到匹配正则表达式 pattern 的所有子串，用另一个字符串 repl 进行替换。如果没有找到匹配 pattern 的串，则返回未被修改的 string。Repl 既可以是字符串也可以是一个函数。
+
+#!/usr/bin/env python
+import re
+p = re.compile('(one|two|three)')
+print(p.sub('num','one word two words three words apple',2))
+ #输出结果：
+num word num words three words apple
+
+
+如果repl是个函数，每次pattern被匹配到的时候，都会被调用一次，传入一个匹配到的MatchObject对象，需要返回一个字符串，在匹配到的位置，就填入返回的字符串。
+>>> def dashrepl(matchobj):
+...     if matchobj.group(0) == '-': return ' '
+...     else:return '-'
+>>> re.sub('-{1,2}', dashrepl, 'pro----gram-files')
+'pro--gram files'
+
+零长度的匹配也会被替换
+>>> re.sub('x*', '-', 'abcxxd')
+'-a-b-c-d-'
+
+特殊地，在替换字符串里，如果有\g这样的写法，将匹配正则的命名组（前面介绍过的，(?P...)这样定义出来的东西）。\g这样的写法，也是数字的组，也就是说，\g<2>一般和\2是等效的，但是万一你要在\2后面紧接着写上字面意义的0，你就不能写成\20了（因为这代表第20个组），这时候必须写成\g<2>0，另外，\g<0>代表匹配到的整个子串。
+>>> re.sub('-(\d+)-', '-\g<1>0\g<0>', 'a-11-b-22-c')
+'a-110-11-b-220-22-c'
+
+6、split
+re.split(pattern, string[, maxsplit=0, flags=0])
+split(string[, maxsplit=0])
+由模式发生的分割字符串。如果在模式中使用捕获圆括号，则模式中所有组的文本也将作为结果列表的一部分返回。如果maxsplit不为零，则最多 发生maxsplit分割，并将其余的字符串作为列表的最后一个元素返回。 
+
+举例：
+>>> re.split('\W+', 'Words, words, words.')
+['Words', 'words', 'words', '']
+>>> re.split('(\W+)', 'Words, words, words.')
+['Words', ', ', 'words', ', ', 'words', '.', '']
+>>> re.split('\W+', 'Words, words, words.', 1)
+['Words', 'words, words.']
+>>> re.split('[a-f]+', '0a3B9', flags=re.IGNORECASE)
+['0', '3', '9']
+
+如果分隔符中存在捕获组，并且匹配字符串的开头，则结果将以空字符串开头。字符串的末尾也是一样：
+>>> re.split('(\W+)', '...words, words...')
+['', '...', 'words', ', ', 'words', '...', '']
+
+7、finditer
+re.finditer(pattern, string[, flags])
+finditer(string[, pos[, endpos]])
+说明：和 findall 类似，在字符串中找到正则表达式所匹配的所有子串，并组成一个迭代器返回。
+
+>>> for m in re.finditer('\w+', 'hello, world!'):
+...     print(m.group())
+...
+hello
+world
