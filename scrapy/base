@@ -1,0 +1,44 @@
+一、scrapy命令行基本命令
+1、在终端中输入scrapy得到一下信息：
+Scrapy 1.5.0 - no active project
+
+Usage:
+  scrapy <command> [options] [args]
+
+Available commands:
+  bench         Run quick benchmark test
+  fetch         Fetch a URL using the Scrapy downloader
+  genspider     Generate new spider using pre-defined templates
+  runspider     Run a self-contained spider (without creating a project)
+  settings      Get settings values
+  shell         Interactive scraping console
+  startproject  Create new project
+  version       Print Scrapy version
+  view          Open URL in browser, as seen by Scrapy
+
+  [ more ]      More commands available when run from project directory
+
+Use "scrapy <command> -h" to see more info about a command
+
+2、startproject  创建项目
+在开始抓取之前，您必须设置一个新的Scrapy项目。输入您要存储代码的目录并运行：
+scrapy startproject tutorial
+这将创建一个tutorial包含以下内容的目录：
+tutorial/
+    scrapy.cfg            # deploy configuration file
+
+    tutorial/             # project's Python module, you'll import your code from here
+        __init__.py
+
+        items.py          # project items definition file
+
+        middlewares.py    # project middlewares file
+
+        pipelines.py      # project pipelines file
+
+        settings.py       # project settings file
+
+        spiders/          # a directory where you'll later put your spiders
+            __init__.py
+            
+3、
