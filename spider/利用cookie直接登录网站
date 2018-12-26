@@ -1,0 +1,25 @@
+一、背景
+有的网站需要登陆后才能访问，我又不想做用户名、密码及验证码的验证，这时可以利用Cookies直接登录。
+网站有的Cookie过期时间为一周到几个月不等，有的Cookie只要已登出就会失效，这主要看服务端的session怎么实现，其实服务端的session就是利用客户端的Cookie实现的
+对于Cookie只要已登出就会失效的网站，可以先用浏览器登录，然后获取session，复制到代码中直接登录，注意这时之后浏览器不能退出登录
+
+二、requests传入Cookies
+1、可以直接传入dict对象
+要想发送你的cookies到服务器，可以使用 cookies 参数：
+
+>>> url = 'http://httpbin.org/cookies'
+>>> cookies = dict(cookies_are='working')
+>>> r = requests.get(url, cookies=cookies)
+>>> r.text
+'{"cookies": {"cookies_are": "working"}}'
+
+2、传入RequestsCookieJar对象
+Cookie 的返回对象为 RequestsCookieJar，它的行为和字典类似，但接口更为完整，适合跨域名跨路径使用。你还可以把 Cookie Jar 传到 Requests 中：
+
+>>> jar = requests.cookies.RequestsCookieJar()
+>>> jar.set('tasty_cookie', 'yum', domain='httpbin.org', path='/cookies')
+>>> jar.set('gross_cookie', 'blech', domain='httpbin.org', path='/elsewhere')
+>>> url = 'http://httpbin.org/cookies'
+>>> r = requests.get(url, cookies=jar)
+>>> r.text
+'{"cookies": {"tasty_cookie": "yum"}}'
