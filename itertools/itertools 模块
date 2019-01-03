@@ -12,26 +12,49 @@ itertools 模块提供的迭代器函数有以下几种类型：
 
 1、Infinite Iterators
 itertools.count(start=0,step=1)
+返回以start为开头，步长step的无限序列迭代器
 itertools.cycle(iterable)
+保存对象的副本，并无限重复返回每一个元素
 itertools.repeat(object[,times])
+创建一个迭代器，重复生成object，times（如果已提供）指定重复计数，如果未提供times，将无止尽返回该对象
 
 2、Iterators terminating on the shortest input sequence
 itertools.accumulate(iterable[, func])
+对iterable对象内的每个元素依次做func运算，更新并输出，func要求为二目运算，详见operator模块
 itertools.chain(*iterables)
+接收多个可迭代对象作为参数，将它们『连接』起来，作为一个新的迭代器返回。
 itertools.chain.from_iterable(iterable)
+将单个iterable中的所有元素拼接输出。
 itertools.compress(data,selectors)
+可用于对数据进行筛选，当 selectors 的某个元素为 true 时，则保留 data 对应位置的元素，否则去除
 itertools.dropwhile(predicate, iterable)
+其中，predicate 是函数，iterable 是可迭代对象。对于 iterable 中的元素，如果 predicate(item) 为 true，则丢弃该元素，否则返回该项及所有后续项。
 itertools.filterfalse(predicate, iterable)
+输出为错的要素
 itertools.groupby(iterable, key=None)
+用于对序列进行分组，其中，iterable 是一个可迭代对象，keyfunc 是分组函数，用于对 iterable 的连续项进行分组，如果不指定，则默认对 iterable 中的连续相同项进行分组，返回一个 (key, sub-iterator) 的迭代器。
+注意使用此函数一定要对iterable先排序
 itertools.islice(iterable, stop)
 itertools.islice(iterable, start, stop[, step])
+是切片选择，其中iterable 是可迭代对象，start 是开始索引，stop 是结束索引，step 是步长，start 和 step 可选。
 itertools.starmap(function, iterable)
+类似 map 操作，它的使用形式如：imap(func, iter1, iter2, iter3, ...)，starmap 返回一个迭代器，元素为 func(i1, i2, i3, ...)，i1，i2 等分别来源于 iter, iter2。
 itertools.takewhile(predicate, iterable)
+与filterfalse()的判断条件相反。
 itertools.tee(iterable, n=2)
+tee 用于从 iterable 创建 n 个独立的迭代器，以元组的形式返回，n 的默认值是 2。
 itertools.zip_longest(*iterables[,fillvalue=none])
+izip_longest跟zip 类似，但迭代过程会持续到所有可迭代对象的元素都被迭代完。如果有指定 fillvalue，则会用其填充缺失的值，否则为 None。
 
 3、Combinatoric generators
 itertools.product(*iterables[,repeat=1])
+用于求多个可迭代对象的笛卡尔积，它跟嵌套的 for 循环等价，其中，repeat 是一个关键字参数，用于指定重复生成序列的次数。
 itertools.permutations(iterable[,r])
+permutations 用于生成一个排列，其中，r 指定生成排列的元素的长度，如果不指定，则默认为可迭代对象的元素长度。
 itertools.combinations(iterable, r)
+combinations 用于求序列的组合，其中，r 指定生成组合的元素的长度。
 itertools.combinations_with_replacement(iterable, r)
+combinations_with_replacement 和 combinations 类似，但它生成的组合包含自身元素。
+
+二、官网例子
+
