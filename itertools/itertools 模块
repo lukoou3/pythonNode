@@ -57,4 +57,7 @@ itertools.combinations_with_replacement(iterable, r)
 combinations_with_replacement 和 combinations 类似，但它生成的组合包含自身元素。
 
 二、官网例子
-
+Iterator	  Arguments	                        Results	                                           Example
+count()	  start,[step]	        start, start+step, start+2*step, …	                count(10) --> 10 11 12 13 14 ...
+cycle()	   p                    p0, p1, … plast, p0, p1, …	                        cycle('ABCD') --> A B C D A B C D ...
+repeat()	elem [,n]	            elem, elem, elem, … endlessly or up to n times	    repeat(10, 3) --> 10 10 10
