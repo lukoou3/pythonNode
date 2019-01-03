@@ -31,3 +31,7 @@ itertools.tee(iterable, n=2)
 itertools.zip_longest(*iterables[,fillvalue=none])
 
 3、Combinatoric generators
+itertools.product(*iterables[,repeat=1])
+itertools.permutations(iterable[,r])
+itertools.combinations(iterable, r)
+itertools.combinations_with_replacement(iterable, r)
