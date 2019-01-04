@@ -1,0 +1,32 @@
+一、简介
+shutil高级文件操作模块：
+shutil模块提供了大量的文件的高级操作。特别针对文件拷贝和删除，主要功能为目录和文件操作以及压缩操作。对单个文件的操作也可参见os模块。
+
+二、常用函数
+1、shutil.copy(src, dst)
+功能：复制文件
+返回值：复制之后的路径
+
+2、shutil.copy2(src, dst)
+功能：复制文件，保留元数据
+返回值：复制之后的路径
+
+3、shutil.copyfile(src, dst)
+功能：复制文件，如果是链接文件，将复制新文件，不复制链接shutil.copytree(src, dst, symlinks=False, ignore=None) 递归的去拷贝文件夹
+返回值：复制之后的路径
+
+4、shutil.copytree(src, dst, symlinks=False, ignore=None) 
+功能：递归的去拷贝文件夹
+返回值：目标目录的路径
+shutil.copytree('folder1', 'folder2', ignore=shutil.ignore_patterns('*.pyc', 'tmp*'))
+shutil.copytree('f1', 'f2', symlinks=True, ignore=shutil.ignore_patterns('*.pyc', 'tmp*'))
+shutil.ignore_patterns(*patterns)
+
+5、shutil.rmtree(path[, ignore_errors[, onerror]])  
+功能：递归的去删除文件
+
+6、shutil.move(src, dst)
+功能：递归的去移动文件，它类似mv命令，其实就是重命名。
+返回值：目标地址
+
+7、
