@@ -1,1 +1,14 @@
+一、简介
+python中的collections模块中有一些特殊的容器类型，有时会很方便。
+
+collections模块：
+    deque：长度固定的双向队列
+    Counter：计数器
+    defaultdict：不会因为键值不存在而报错
+    OrderDict：有序的dict
+    namedtuple：构建有名字的元组和有名字的类
+    ChainMap：容纳多个映射对象的容器
+    User系列：可自定义的传统容器
+    
+二、常用函数
 
