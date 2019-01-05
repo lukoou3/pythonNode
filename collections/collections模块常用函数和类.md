@@ -23,21 +23,24 @@ zhanglin = p("zhanglin",30,"male")
 print(zhanglin.name,zhanglin.age)
 City = namedtuple('City', 'name country population coordinates')
 Mytuple = namedtuple('Mytuple', ['x','y'])
-'''
+```
 
 ### 2、Counter
 collections.Counter([iterable-or-mapping])
 Counter作为字典dicit（）的一个子类用来进行hashtable计数，将元素进行数量统计，计数后返回一个字典，键值为元素，值为元素个数
+
 常用方法：
-most_common(int)	按照元素出现的次数进行从高到低的排序，返回前int个元素的字典
-elements	返回经过计算器Counter后的元素，返回的是一个迭代器
-update	和set集合的update一样，对集合进行并集更新
-substract	和update类似，只是update是做加法，substract做减法,从另一个集合中减去本集合的元素
-iteritems	返回由Counter生成的字典的所有item
-iterkeys	返回由Counter生成的字典的所有key
-itervalues	返回由Counter生成的字典的所有value
+    
+    most_common(int)	按照元素出现的次数进行从高到低的排序，返回前int个元素的字典
+    elements	返回经过计算器Counter后的元素，返回的是一个迭代器
+    update	和set集合的update一样，对集合进行并集更新
+    substract	和update类似，只是update是做加法，substract做减法,从另一个集合中减去本集合的元素
+    iteritems	返回由Counter生成的字典的所有item
+    iterkeys	返回由Counter生成的字典的所有key
+    itervalues	返回由Counter生成的字典的所有value
 
 例子：
+'''
 from collections import Counter
 
 str = "abcbcaccbbad"
@@ -62,3 +65,4 @@ print("若是字典的话返回value个key:", sorted(d2.elements()))
 
 #update和set集合的update一样，对集合进行并集更新
 print ("d1.update("sas1"):",d1.update("sas1"))
+'''
