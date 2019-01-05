@@ -87,7 +87,7 @@ deque属于高性能的数据结构之一，常用方法如下：
     rotate（n）	对队列数进行移动
 
 例子：
-```
+```python
 >>> from collections import deque
 >>> q = deque(['a','b','c'])
 >>> q.append('x')    # 默认添加列表最后一项
@@ -101,4 +101,29 @@ deque(['y', 'a', 'b', 'c', 'x'])
 >>> q
 deque(['a', 'b', 'c'])
 ```
-aa
+
+### 4、defaultdict
+使用字典时，如果引用的Key不存在，就会抛出 KeyError，如果希望key不存在时，返回一个默认值，就可以用 defaultdict. 
+
+```python
+>>> from collections import defaultdict
+>>> Mydict = defaultdict(lambda: 'N/A')
+>>> Mydict['key1'] = 'abc'
+>>> Mydict['key1']    # 字典的key1存在
+'abc'
+>>> Mydict['key2']    # 字典的key2不存在，返回默认值为‘N/A’
+'N/A'
+#注意默认值是调用函数返回的，而函数在创建defaultdict对象时传入。除了key不存在而返回默认值，其他功能与普通字典无异
+```
+
+### 5、OrderedDict
+有序字典的应用。OrderedDict 的有序性是按照插入的顺序，而不是KEY的顺序。
+```python
+>>> from collections import OrderedDict
+>>> d = dict([('a', 1), ('b', 2), ('c', 3)])
+>>> d # dict的Key是无序的
+{'a': 1, 'c': 3, 'b': 2}
+>>> od = OrderedDict([('a', 1), ('b', 2), ('c', 3)])
+>>> od # OrderedDict的Key是有序的
+OrderedDict([('a', 1), ('b', 2), ('c', 3)])
+```
