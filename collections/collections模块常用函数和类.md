@@ -40,7 +40,7 @@ Counter作为字典dicit（）的一个子类用来进行hashtable计数，将�
     itervalues	返回由Counter生成的字典的所有value
 
 例子：
-'''
+```python
 from collections import Counter
 
 str = "abcbcaccbbad"
@@ -65,4 +65,5 @@ print("若是字典的话返回value个key:", sorted(d2.elements()))
 
 #update和set集合的update一样，对集合进行并集更新
 print ("d1.update("sas1"):",d1.update("sas1"))
-'''
+```
+aaa
