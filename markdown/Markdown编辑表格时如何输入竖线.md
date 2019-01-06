@@ -14,6 +14,7 @@ How to input ‘|’（pipe，vertical bar） in table in markdown editor?
 ```
 
 显示效果：
+
 | a            | r         |
 | ------------ | --------- |
 | a += x;    | r1        |
@@ -31,6 +32,7 @@ How to input ‘|’（pipe，vertical bar） in table in markdown editor?
 ```
 
 显示效果：
+
 | a                         | r   |
 | ------------------------- | --- |
 | `a += x;`                 | r1  |
