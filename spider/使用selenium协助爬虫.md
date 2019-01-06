@@ -1,0 +1,152 @@
+### 一、使用selenium驱动谷歌浏览器
+#### 1、以前都用PhantomJS来进行无界面模式的自动化测试，或者爬取某些动态页面。
+但是最近selenium更新以后，'Selenium support for PhantomJS has been deprecated, please use headless '提示不支持PhantomJs，请使用headless模式。
+好吧，我们还是继续使用chrome的headless模式吧。
+
+#### 2、基本函数
+```python
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+chrome_options = Options()
+chrome_options.add_argument('--headless')#启用无头模式
+chrome_options.add_argument('--disable-gpu')#禁用gpu加速
+driver = webdriver.Chrome(executable_path="/home/lifengchao/软件/chromedriver_linux64/chromedriver",chrome_options=chrome_options)
+
+driver.get("https://www.baidu.com/")
+#print(driver.page_source)#browser.page_source是获取网页的全部html
+
+driver.close()#Closes the current window
+driver.quit()
+```
+
+### 二、使用selenium调用页面上js代码
+###### 1、有时候不得不需要调用页面上的js，比如发送到服务器的请求中的参数，需要把一个字符串加密（js方法）之后发送，这时候没有你要去研究怎么把他的加密算法看懂，只需要调用他的代码即可
+
+###### 2、调用js的函数
+```python
+    def execute_script(self, script, *args):
+        """
+        Synchronously Executes JavaScript in the current window/frame.
+
+        :Args:
+         - script: The JavaScript to execute.
+         - \*args: Any applicable arguments for your JavaScript.
+
+        :Usage:
+            driver.execute_script('return document.title;')
+        """
+    def execute_async_script(self, script, *args):
+      """
+      Asynchronously Executes JavaScript in the current window/frame.
+
+      :Args:
+       - script: The JavaScript to execute.
+       - \*args: Any applicable arguments for your JavaScript.
+
+      :Usage:
+          script = "var callback = arguments[arguments.length - 1]; " \
+                   "window.setTimeout(function(){ callback('timeout') }, 3000);"
+          driver.execute_async_script(script)
+      """
+```
+###### 只要使用execute_script，execute_async_script通过测试没啥用
+
+##### 3、调用调用js的函数，传参和返回值Python和js类型对应情况
+  除了可以传递WebElement类型的参数之外，其他类型的对应情况的python和JavaScript中json的对应情况一直
+
+##### 4、事例
+```python
+  html页面上存在的函数：
+  function test(obj){
+      return "name:"+ obj.name+",age:"+obj.age;
+  }
+  function testSync(a,b,c,d){
+      return {a:a+b,b:c+d}
+  }
+  function testAsync(a,b){
+      var c = a +b;
+      console.log(c);
+      setTimeout(function(){
+          return c;
+      }, 3000);
+  }
+
+  测试代码：
+  print(driver.execute_script('return IpToLong("10.24.2.31")'))
+  print(driver.execute_script('return test({name:"小明",age:23})'))
+  print(driver.execute_script('return window.location'))
+  print(type(driver.execute_script('return window.location')))
+
+  print("*"*40)
+
+  print(driver.execute_script('return IpToLong(arguments[0])',"10.24.2.31"))
+  print(driver.execute_script('return test(arguments[0])',{'name':"小明",'age':23}))
+
+  print("*"*40)
+
+  print(driver.execute_script('return testSync(arguments[0],arguments[1],arguments[2],arguments[3])',1,2,"1","2"))
+  script = "var callback = arguments[arguments.length - 1]; ""window.setTimeout(function(){ callback({name:'小明',age:23}) }, 3000);"
+  print(driver.execute_async_script(script))#感觉没啥用
+  print(driver.execute_script('return testAsync(arguments[0],arguments[1])',1,2))#相当于js调用
+  #报错
+  #print(driver.execute_async_script('return testAsync(arguments[0],arguments[1])',1,2))
+```
+
+### 三、selenium同时打开窗口，并切换
+##### 1、有时候需要同时打开多个窗口，比如我只需要利用两个页面上的加密函数开构造请求头，就没必要每次get一下来重定向本窗口的url，浪费效率！只需同时打开两个窗口，然后切换就行。
+
+##### 2、使用selenium打开一个tab（两种方法，建议使用第一种）
+```python
+a、通过调用页面的js来打开一个tab
+  driver.execute_script("window.open('{}');".format("https://www.baidu.com/"))
+b、利用webdriver中send_key 的方法去触发ctrl+t的效果
+  from selenium.webdriver.common.keys import Keys
+  driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + 't')  # 触发ctrl + t
+```
+
+ ##### 3、使用selenium切换窗口的方法
+ 函数：
+ ```python
+ driver.current_window_handle#获得当前窗口句柄
+ driver.window_handles#获取当前窗口句柄集合（列表类型）
+ driver.switch_to.window(window_handle)#切换到对应的窗口
+ ```
+
+ 切换方式（两种）：
+ ```python
+ a、通过窗口列表索引访问
+ # 获取打开的多个窗口句柄
+ windows = driver.window_handles
+ # 切换到当前最新打开的窗口
+ driver.switch_to.window(windows[-1])
+
+ b、通过变量保存窗口对象访问
+ # 获得打开的第一个窗口句柄
+ window_1 = driver.current_window_handle
+ # 获得打开的所有的窗口句柄
+ windows = driver.window_handles
+ # 切换到最新的窗口
+ for current_window in windows:
+     if current_window != window_1:
+         driver.switch_to.window(current_window)
+ ```
+ 比较：
+ ###### 第一种效率高一点，第二种易理解，建立用第二种
+
+ 代码事例：
+  ```python
+ 初始化时打开两个页面，当需要调用页面上的加密函数时，如果不在对应页面，则切换
+  self.driver.get("file:///D:/pycharmWork/downVipVideo/html/siguStart.html")
+  self.driver_yuujx_handle = self.driver.current_window_handle
+  self.driver.execute_script("window.open('{}');".format("file:///D:/pycharmWork/downVipVideo/html/siguStart2.html"))
+
+  def download_video_one_yuujx(self,href,name,path):
+    if self.driver.current_window_handle != self.driver_yuujx_handle:
+        self.driver.switch_to.window(self.driver_yuujx_handle)
+
+  def download_video_one_jiexi(self,href,name):
+    if self.driver.current_window_handle != self.driver_jiexi_handle:
+        self.driver.switch_to.window(self.driver_jiexi_handle)
+
+ ```
