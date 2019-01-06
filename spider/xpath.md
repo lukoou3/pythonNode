@@ -8,6 +8,7 @@ links = html.xpath("//ul[@class='mod-play-list play-list-num  tab-panel tab-1']/
 ### 二、基本语法
 ##### 1、选取节点
 Xpath使用路径表达式在XML文档中选取节点。节点是通过沿着路径来选取的，通过路径可以找到我们想要的节点或者节点范围。
+
 | 表达式 | 描述 | 用法 | 说明 |
 | ------ | ---- | ---- | ---- |
 | nodename | 选取此节点的所有子节点。 | xpath(‘span’) | 选取span元素的所有子节点 |
