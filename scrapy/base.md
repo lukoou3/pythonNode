@@ -21,15 +21,15 @@ Spider中间件是在引擎及Spider之间的特定钩子(specific hook)，处�
 
 #### 数据流向
 Scrapy的数据流由执行引擎（Engine）控制，其基本过程如下：
-&emsp;&emsp;1. 引擎从Spider中获取到初始Requests。
-&emsp;&emsp;2. 引擎将该Requests放入调度器，并请求下一个要爬取的Requests。
-&emsp;&emsp;3. 调度器返回下一个要爬取的Requests给引擎
-&emsp;&emsp;4. 引擎将Requests通过下载器中间件转发给下载器(Downloader)。
-&emsp;&emsp;5. 一旦页面下载完毕，下载器生成一个该页面的Response，并将其通过下载中间件(返回(response)方向)发送给引擎。
-&emsp;&emsp;6. 引擎从下载器中接收到Response并通过Spider中间件(输入方向)发送给Spider处理。
-&emsp;&emsp;7. Spider处理Response并返回爬取到的Item及(跟进的)新的Request给引擎。
-&emsp;&emsp;8. 引擎将(Spider返回的)爬取到的Item交给ItemPipeline处理，将(Spider返回的)Request交给调度器，并请求下一个Requests（如果存在的话）。
-&emsp;&emsp;9. (从第一步)重复直到调度器中没有更多地Request。
+* 1.引擎从Spider中获取到初始Requests。
+* 2.引擎将该Requests放入调度器，并请求下一个要爬取的Requests。
+* 3.调度器返回下一个要爬取的Requests给引擎
+* 4.引擎将Requests通过下载器中间件转发给下载器(Downloader)。
+* 5.一旦页面下载完毕，下载器生成一个该页面的Response，并将其通过下载中间件(返回(response)方向)发送给引擎。
+* 6.引擎从下载器中接收到Response并通过Spider中间件(输入方向)发送给Spider处理。
+* 7.Spider处理Response并返回爬取到的Item及(跟进的)新的Request给引擎。
+* 8.引擎将(Spider返回的)爬取到的Item交给ItemPipeline处理，将(Spider返回的)Request交给调度器，并请求下一个Requests（如果存在的话）。
+* 9.(从第一步)重复直到调度器中没有更多地Request。
 
 #### 总结
 &emsp;&emsp;Scrapy的各个组件相互配合执行，有的组件负责任务的调度，有的组件负责任务的下载，有的组件负责数据的清洗保存，各组件分工明确。在组件之间存在middleware的中间件，其作用就是功能的拓展，当然还可以根据自身的需求自定义这些拓展功能，比如我们可以在Downloader middlewares里面实现User-Agent的切换，Proxy的切换等等。

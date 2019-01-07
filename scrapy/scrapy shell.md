@@ -1,6 +1,8 @@
 ### 一、背景
 &emsp;&emsp;Scrapy shell是一个交互式shell，您可以非常快速地调试您的抓取代码，而无需运行spider。它用于测试数据提取代码，但您实际上可以使用它来测试任何类型的代码，因为它也是常规的Python shell。
+
 &emsp;&emsp;该shell用来测试XPath或CSS表达式，查看他们的工作方式及从爬取的网页中提取的数据。在编写您的spider时，该终端提供了交互性测试您的表达式代码的功能，免去了每次修改后运行spider的麻烦。
+
 &emsp;&emsp;一旦熟悉了Scrapy shell，您就会发现它是开发和调试蜘蛛的宝贵工具。
 
 &emsp;&emsp;如果您安装了 IPython ，Scrapy终端将使用 IPython (替代标准Python终端)。 IPython 终端与其他相比更为强大，提供智能的自动补全，高亮输出，及其他特性。
