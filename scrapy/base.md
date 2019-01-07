@@ -1,4 +1,40 @@
-### 一、scrapy命令行基本命令 与 scrapy项目目录
+### 一、scrapy框架概览
+#### 概览
+&emsp;&emsp;下面是scrapy官网给出的最新的架构图示。
+![architecture](/assets/architecture.png)
+
+#### 基本组件
+* **引擎（Engine）**
+引擎负责控制数据流在系统中所有组件中流动，并在相应动作发生时触发事件。 详细内容查看下面的数据流(Data Flow)部分。
+* **调度器（Scheduler）******
+调度器从引擎接受request并将他们入队，以便之后引擎请求他们时提供给引擎。
+* **下载器(Downloader)****
+下载器负责获取页面数据并提供给引擎，而后提供给spider。
+* **爬虫（Spiders）**
+Spider是Scrapy用户编写用于分析response并提取item(即获取到的item)或额外跟进的URL的类。 每个spider负责处理一个特定(或一些)网站。
+* **管道（Item Pipeline）**
+Item Pipeline负责处理被spider提取出来的item。典型的处理有清理、验证及持久化(例如存取到数据库中)。
+* **下载器中间件（Downloader middlewares）**
+下载器中间件是在引擎及下载器之间的特定钩子(specific hook)，处理Downloader传递给引擎的response。 其提供了一个简便的机制，通过插入自定义代码来扩展Scrapy功能。
+* **Spider中间件（Spider middlewares）**
+Spider中间件是在引擎及Spider之间的特定钩子(specific hook)，处理spider的输入(response)和输出(items及requests)。 其提供了一个简便的机制，通过插入自定义代码来扩展Scrapy功能。
+
+#### 数据流向
+Scrapy的数据流由执行引擎（Engine）控制，其基本过程如下：
+&emsp;&emsp;1. 引擎从Spider中获取到初始Requests。
+&emsp;&emsp;2. 引擎将该Requests放入调度器，并请求下一个要爬取的Requests。
+&emsp;&emsp;3. 调度器返回下一个要爬取的Requests给引擎
+&emsp;&emsp;4. 引擎将Requests通过下载器中间件转发给下载器(Downloader)。
+&emsp;&emsp;5. 一旦页面下载完毕，下载器生成一个该页面的Response，并将其通过下载中间件(返回(response)方向)发送给引擎。
+&emsp;&emsp;6. 引擎从下载器中接收到Response并通过Spider中间件(输入方向)发送给Spider处理。
+&emsp;&emsp;7. Spider处理Response并返回爬取到的Item及(跟进的)新的Request给引擎。
+&emsp;&emsp;8. 引擎将(Spider返回的)爬取到的Item交给ItemPipeline处理，将(Spider返回的)Request交给调度器，并请求下一个Requests（如果存在的话）。
+&emsp;&emsp;9. (从第一步)重复直到调度器中没有更多地Request。
+
+#### 总结
+&emsp;&emsp;Scrapy的各个组件相互配合执行，有的组件负责任务的调度，有的组件负责任务的下载，有的组件负责数据的清洗保存，各组件分工明确。在组件之间存在middleware的中间件，其作用就是功能的拓展，当然还可以根据自身的需求自定义这些拓展功能，比如我们可以在Downloader middlewares里面实现User-Agent的切换，Proxy的切换等等。
+
+### 二、scrapy命令行基本命令 与 scrapy项目目录
 ##### 1、scrapy命令行基本命令
 &emsp;&emsp;在终端中输入scrapy得到一下信息：
 ```python
