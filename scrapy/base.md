@@ -1,6 +1,7 @@
-一、scrapy命令行基本命令 与 scrapy项目目录
-1、scrapy命令行基本命令
-在终端中输入scrapy得到一下信息：
+### 一、scrapy命令行基本命令 与 scrapy项目目录
+##### 1、scrapy命令行基本命令
+&emsp;&emsp;在终端中输入scrapy得到一下信息：
+```python
 Scrapy 1.5.0 - no active project
 
 Usage:
@@ -20,11 +21,15 @@ Available commands:
   [ more ]      More commands available when run from project directory
 
 Use "scrapy <command> -h" to see more info about a command
+```
 
-2、scrapy项目目录结构
-在开始抓取之前，您必须设置一个新的Scrapy项目。输入您要存储代码的目录并运行：
-scrapy startproject tutorial
+##### 2、scrapy项目目录结构
+&emsp;&emsp;在开始抓取之前，您必须设置一个新的Scrapy项目。输入您要存储代码的目录并运行：
+
+    scrapy startproject tutorial
+
 这将创建一个tutorial包含以下内容的目录：
+```python
 tutorial/
     scrapy.cfg            # deploy configuration file
 
@@ -41,10 +46,12 @@ tutorial/
 
         spiders/          # a directory where you'll later put your spiders
             __init__.py
+```
 
-3、可用的工具命令
-scrapy -h
-可以看到所有可用的命令：
+##### 3、可用的工具命令
+    scrapy -h
+**可以看到所有可用的命令**：
+```python
 Available commands:
   bench         Run quick benchmark test
   fetch         Fetch a URL using the Scrapy downloader
@@ -58,16 +65,15 @@ Available commands:
 
   [ more ]      More commands available when run from project directory
 Use "scrapy <command> -h" to see more info about a command
+```
+
+`scrapy <command> -h`运行以获取有关每个命令的更多信息
 
 
-scrapy <command> -h
-运行以获取有关每个命令的更多信息
+&emsp;&emsp;有两种命令，一种只能在Scrapy项目内部工作（特定于项目的命令）和那些在没有活动的Scrapy项目（全局命令）的情况下工作的命令，尽管从项目内部运行时它们可能表现略有不同（因为他们会使用项目覆盖设置）。
 
-
-有两种命令，一种只能在Scrapy项目内部工作（特定于项目的命令）和那些在没有活动的Scrapy项目（全局命令）的情况下工作的命令，尽管从项目内部运行时它们可能表现略有不同（因为他们会使用项目覆盖设置）。
-
-全局命令：
-
+**全局命令**：
+```
 startproject
 genspider
 settings
@@ -76,11 +82,14 @@ shell
 fetch
 view
 version
-仅限项目的命令：
+```
 
+**仅限项目的命令**：
+```
 crawl
 check
 list
 edit
 parse
 bench
+```
