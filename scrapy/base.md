@@ -8,21 +8,19 @@
 ![architecture](/assets/architecture.png)
 
 #### 基本组件
-* **引擎（Engine）**
-
+* **引擎（Engine）**  
 引擎负责控制数据流在系统中所有组件中流动，并在相应动作发生时触发事件。 详细内容查看下面的数据流(Data Flow)部分。
-* **调度器（Scheduler）**
-
+* **调度器（Scheduler）**  
 调度器从引擎接受request并将他们入队，以便之后引擎请求他们时提供给引擎。
-* **下载器(Downloader)**
+* **下载器(Downloader)**  
 下载器负责获取页面数据并提供给引擎，而后提供给spider。
-* **爬虫（Spiders）**
+* **爬虫（Spiders）**  
 Spider是Scrapy用户编写用于分析response并提取item(即获取到的item)或额外跟进的URL的类。 每个spider负责处理一个特定(或一些)网站。
-* **管道（Item Pipeline）**
+* **管道（Item Pipeline）**  
 Item Pipeline负责处理被spider提取出来的item。典型的处理有清理、验证及持久化(例如存取到数据库中)。
-* **下载器中间件（Downloader middlewares）**
+* **下载器中间件（Downloader middlewares）**  
 下载器中间件是在引擎及下载器之间的特定钩子(specific hook)，处理Downloader传递给引擎的response。 其提供了一个简便的机制，通过插入自定义代码来扩展Scrapy功能。
-* **Spider中间件（Spider middlewares）**
+* **Spider中间件（Spider middlewares）**  
 Spider中间件是在引擎及Spider之间的特定钩子(specific hook)，处理spider的输入(response)和输出(items及requests)。 其提供了一个简便的机制，通过插入自定义代码来扩展Scrapy功能。
 
 #### 数据流向
@@ -140,29 +138,43 @@ bench
 #### 简介
 &emsp;&emsp;Scrapy是通过Scrapy命令行工具进行控制的，包括创建新的项目，爬虫的启动，相关的设置，Scrapy提供了两种内置的命令，分别是全局命令和项目命令，顾名思义，全局命令就是在任意位置都可以执行的命令，而项目命令只有在你新创建了项目之后，在项目目录中才可以执行的命令。在这里，简单的介绍一些常用的命令。
 #### 全局命令
-* **startproject**
-语法: `scrapy startproject <project_name>`
-这个命令是scrapy最为常用的命令之一，它将会在当前目录下创建一个名为 <project_name>的项目。
+* **startproject**  
+语法: `scrapy startproject <project_name>`  
+这个命令是scrapy最为常用的命令之一，它将会在当前目录下创建一个名为 <project_name>的项目。  
 * settings
-语法: scrapy settings [options]
-该命令将会输出Scrapy默认设定，当然如果你在项目中运行这个命令将会输出项目的设定值。
-* runspider
-语法: scrapy runspider <spider_file.py>
+语法: scrapy settings [options]   
+该命令将会输出Scrapy默认设定，当然如果你在项目中运行这个命令将会输出项目的设定值。    
+* runspider  
+语法: scrapy runspider <spider_file.py>  
 在未创建项目的情况下，运行一个编写在Python文件中的spider。
-* shell
-语法: scrapy shell [url]
-以给定的URL(如果给出)或者空(没有给出URL)启动Scrapy shell。
-例如，scrapy shell http://www.baidu.com将会打开百度URL，
-并且启动交互式命令行，可以用来做一些测试。
-* fetch
-语法: scrapy fetch <url>
-使用Scrapy下载器(downloader)下载给定的URL，并将获取到的内容送到标准输出。简单的来说，就是打印url的html代码。
-* view
-语法: scrapy view <url>
-在你的默认浏览器中打开给定的URL，并以Scrapy spider获取到的形式展现。 有些时候spider获取到的页面和普通用户看到的并不相同，一些动态加载的内容是看不到的， 因此该命令可以用来检查spider所获取到的页面。
-* version
-语法: scrapy version [-v]
-输出Scrapy版本。配合 -v 运行时，该命令同时输出Python, Twisted以及平台的信息。
+* **shell**  
+语法: scrapy shell [url]  
+以给定的URL(如果给出)或者空(没有给出URL)启动Scrapy shell。  
+例如，scrapy shell http://www.baidu.com将会打开百度URL，  
+并且启动交互式命令行，可以用来做一些测试。      
+* fetch    
+语法: scrapy fetch <url>  
+使用Scrapy下载器(downloader)下载给定的URL，并将获取到的内容送到标准输出。简单的来说，就是打印url的html代码。  
+* view    
+语法: scrapy view <url>  
+在你的默认浏览器中打开给定的URL，并以Scrapy spider获取到的形式展现。 有些时候spider获取到的页面和普通用户看到的并不相同，一些动态加载的内容是看不到的， 因此该命令可以用来检查spider所获取到的页面。  
+* version  
+语法: scrapy version [-v]  
+输出Scrapy版本。配合 -v 运行时，该命令同时输出Python, Twisted以及平台的信息。  
+#### 项目命令
+* **crawl**  
+语法: scrapy crawl <spider_name>  
+使用你项目中的spider进行爬取，即启动你的项目。这个命令将会经常用到，我们会在后面的内容中经常使用。
+* check  
+语法: crapy check [-l] <spider>  
+运行contract检查，检查你项目中的错误之处。
+* list  
+语法: scrapy list  
+列出当前项目中所有可用的spider。每行输出一个spider。
+* **genspider**  
+语法: scrapy genspider [-t template] <name> <domain>  
+在当前项目中创建spider。该方法可以使用提前定义好的模板来生成spider。您也可以自己创建spider的源码文件。
+
 
 
 ### 三、scrapy工程入门命令
