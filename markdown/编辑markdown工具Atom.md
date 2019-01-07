@@ -18,3 +18,9 @@
 ### 配置参考网址
 https://sspai.com/post/40460
 https://www.cnblogs.com/libin-1/p/6638165.html
+
+
+### 一些问题
+##### 1、atom自动删除了我行末的空格？每次一保存就会自动删除空格
+解决方法：   
+【Edit】->【Preferences】->【Packages】->【whitespace】->【Settings】勾选掉 Ensure Single Trailing Newline 与 Remove Trailing Whitespace
