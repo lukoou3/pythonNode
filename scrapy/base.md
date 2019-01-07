@@ -88,6 +88,21 @@ tutorial/
             __init__.py
 ```
 
+各目录/文件的作用：  
+* scrapy.cfg  
+项目的配置文件，带有这个文件的那个目录作为scrapy项目的根目录
+* items.py  
+定义你所要抓取的字段
+* pipelines.py  
+管道文件，当spider抓取到内容（item）以后，会被送到这里，这些信息（item）在这里会被清洗，去重，保存到文件或者数据库。
+* middlewares.py  
+中间件，主要是对功能的拓展，你可以添加一些自定义的功能，比如添加随机user-agent, 添加proxy。
+* settings.py  
+设置文件，用来设置爬虫的默认信息，相关功能开启与否，比如是否遵循robots协议，设置默认的headers，设置文件的路径，中间件的执行顺序等等。
+* spiders/  
+在这个文件夹下面，编写你自定义的spider。
+
+
 ##### 3、可用的工具命令
     scrapy -h
 **可以看到所有可用的命令**：
