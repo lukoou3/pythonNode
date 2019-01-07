@@ -14,6 +14,8 @@
 | language-markdown         | 代码增强         |
 | markdown-scroll-sync      | 同步滚动         |
 
+##### Markdown-img-paste
+使用 ‘ctrl+shift+v’复制剪切板的图片到markdown
 
 ### 配置参考网址
 https://sspai.com/post/40460
@@ -24,3 +26,4 @@ https://www.cnblogs.com/libin-1/p/6638165.html
 ##### 1、atom自动删除了我行末的空格？每次一保存就会自动删除空格
 解决方法：   
 【Edit】->【Preferences】->【Packages】->【whitespace】->【Settings】勾选掉 Ensure Single Trailing Newline 与 Remove Trailing Whitespace
+![](/assets/markdown-img-paste-20190107190745235.png)

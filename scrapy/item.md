@@ -1,7 +1,7 @@
 ### 一、item
 &emsp;&emsp;抓取的主要目标是从非结构化源（通常是网页）中提取结构化数据。scrapy spider可以像Python一样返回提取的数据。虽然方便和熟悉，但Python缺乏结构：很容易在字段名称中输入拼写错误返回不一致的数据，尤其是在具有许多spider的较大项目中。  
 &emsp;&emsp;为了定义通用输出数据格式，Scrapy提供了Item类。 Item对象是用于收集抓取数据的简单容器。它们提供类似dict的 API，并具有用于声明其可用字段的方便语法。  
-&emsp;&emsp;**Item类似与dict，不过Item对象只能够给已经声明的字段赋值**  
+&emsp;&emsp;**Item类似与dict，不过Item对象只能够给已经声明的字段赋值，来避免拼写错误导致的未定义字段错误**  
 
 ### 二、测试item
 ##### 声明item
