@@ -8,9 +8,11 @@
 ![architecture](/assets/architecture.png)
 
 #### 基本组件
-* **引擎（Engine）**  
+* **引擎（Engine）**
+
 引擎负责控制数据流在系统中所有组件中流动，并在相应动作发生时触发事件。 详细内容查看下面的数据流(Data Flow)部分。
 * **调度器（Scheduler）**
+
 调度器从引擎接受request并将他们入队，以便之后引擎请求他们时提供给引擎。
 * **下载器(Downloader)**
 下载器负责获取页面数据并提供给引擎，而后提供给spider。
