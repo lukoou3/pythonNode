@@ -74,3 +74,104 @@ class mySpider(Spider):
     }
     ...
 ```
+
+### Item pipeline example(官网)
+##### Price validation and dropping items with no prices
+Let’s take a look at the following hypothetical pipeline that adjusts the `price` attribute for those items that do not include VAT (`price_excludes_vat` attribute), and drops those items which don’t contain a price:
+```python
+from scrapy.exceptions import DropItem
+
+class PricePipeline(object):
+
+    vat_factor = 1.15
+
+    def process_item(self, item, spider):
+        if item['price']:
+            if item['price_excludes_vat']:
+                item['price'] = item['price'] * self.vat_factor
+            return item
+        else:
+            raise DropItem("Missing price in %s" % item)
+```
+
+##### Write items to a JSON file
+The following pipeline stores all scraped items (from all spiders) into a single `items.jl` file, containing one item per line serialized in JSON format:
+```python
+import json
+
+class JsonWriterPipeline(object):
+
+    def open_spider(self, spider):
+        self.file = open('items.jl', 'w')
+
+    def close_spider(self, spider):
+        self.file.close()
+
+    def process_item(self, item, spider):
+        line = json.dumps(dict(item)) + "\n"
+        self.file.write(line)
+        return item
+```
+**Note**  
+The purpose of JsonWriterPipeline is just to introduce how to write item pipelines. **If you really want to store all scraped items into a JSON file you should use the Feed exports.**
+
+##### Write items to MongoDB
+In this example we’ll write items to `MongoDB` using `pymongo`. MongoDB address and database name are specified in Scrapy settings; MongoDB collection is named after item class.    
+The main point of this example is to show how to use from_crawler() method and how to clean up the resources properly.:
+```python
+import pymongo
+
+class MongoPipeline(object):
+
+    collection_name = 'scrapy_items'
+
+    def __init__(self, mongo_uri, mongo_db):
+        self.mongo_uri = mongo_uri
+        self.mongo_db = mongo_db
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(
+            mongo_uri=crawler.settings.get('MONGO_URI'),
+            mongo_db=crawler.settings.get('MONGO_DATABASE', 'items')
+        )
+
+    def open_spider(self, spider):
+        self.client = pymongo.MongoClient(self.mongo_uri)
+        self.db = self.client[self.mongo_db]
+
+    def close_spider(self, spider):
+        self.client.close()
+
+    def process_item(self, item, spider):
+        self.db[self.collection_name].insert_one(dict(item))
+        return item
+```
+
+##### Duplicates filter
+A filter that looks for duplicate items, and drops those items that were already processed. Let’s say that our items have a unique id, but our spider returns multiples items with the same id:
+```python
+from scrapy.exceptions import DropItem
+
+class DuplicatesPipeline(object):
+
+    def __init__(self):
+        self.ids_seen = set()
+
+    def process_item(self, item, spider):
+        if item['id'] in self.ids_seen:
+            raise DropItem("Duplicate item found: %s" % item)
+        else:
+            self.ids_seen.add(item['id'])
+            return item
+```
+
+##### Activating an Item Pipeline component
+To activate an Item Pipeline component you must add its class to the `ITEM_PIPELINES` setting, like in the following example:
+```python
+ITEM_PIPELINES = {
+    'myproject.pipelines.PricePipeline': 300,
+    'myproject.pipelines.JsonWriterPipeline': 800,
+}
+```
+The integer values you assign to classes in this setting determine the order in which they run: items go through from lower valued to higher valued classes. It’s customary to define these numbers in the 0-1000 range.
