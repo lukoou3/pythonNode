@@ -140,6 +140,7 @@ class FilesPipeline(MediaPipeline):
 
     #item所有url下载完成后
     def item_completed(self, results, item, info):
+        ""Called per item when all media requests has been processed"""
         if isinstance(item, dict) or self.files_result_field in item.fields:
             item[self.files_result_field] = [x for ok, x in results if ok]
         return item
@@ -152,6 +153,134 @@ class FilesPipeline(MediaPipeline):
         return 'full/%s%s' % (media_guid, media_ext)
 ```
 
-https://www.cnblogs.com/cnkai/p/7400467.html
-https://www.cnblogs.com/moon-future/p/5545828.html
-https://docs.scrapy.org/en/latest/topics/media-pipeline.html
+#### 重写 get_media_requests(item, info)
+FilesPipeline从这个方法的返回的Request下载文件。  
+```Python
+def get_media_requests(self, item, info):
+    for file_url in item['file_urls']:
+        yield scrapy.Request(file_url)
+```
+这些请求将由FilesPipeline处理，当它们全部完成下载后，结果将以2元素的元组列表形式传送到 item_completed(results, item, info) 方法的results，每个元组包含 (success, file_info_or_error):  
+* **success** 是一个布尔值，当图片成功下载时为 True ，因为某个原因下载失败为False  
+* **file_info_or_error** 是一个包含下列关键字的字典（如果成功为 True ）或者出问题时为 Twisted Failure 。
+    * **ur**l - 文件下载的url。这是从 get_media_requests() 方法返回请求的url。
+    * **path** - 文件存储的路径（类似 IMAGES_STORE）
+    * **checksum** - 图片内容的 MD5 hash
+
+item_completed() 接收的元组列表与 get_media_requests() 方法返回请求的顺序相一致。下面是 results 参数的一个典型值:
+```python
+[(True,
+  {'checksum': '2b00042f7481c7b056c4b410d28f33cf',
+   'path': 'full/0a79c461a4062ac383dc4fade7bc09f1384a3910.jpg',
+   'url': 'http://www.example.com/files/product1.pdf'}),
+ (False,
+  Failure(...))]
+```
+
+#### 重写 item_completed(results, item, info)
+当单个item的所有文件请求都已完成（完成下载或由于某种原因失败）时调用此方法。 
+该item_completed方法必须返回将发送到后续Pipeline的输出，因此您必须返回（或删除）该item，就像在其他任何管道中一样。  
+下面item_completed是在item的file_paths字段中存储下载的文件路径（在结果中传递）的方法示例，如果item不包含任何文件，则删除该item：  
+```Python
+from scrapy.exceptions import DropItem
+
+def item_completed(self, results, item, info):
+    file_paths = [x['path'] for ok, x in results if ok]
+    if not file_paths:
+        raise DropItem("Item contains no files")
+    item['file_paths'] = file_paths
+    return item
+```
+
+#### 重写 file_path(request, response=None, info=None)
+此方法返回每个下载文件的储存路径
+```Python
+def file_path(self, request, response=None, info=None):
+    url = request.url
+    media_guid = hashlib.sha1(to_bytes(url)).hexdigest()  # change to request.url after deprecation
+    media_ext = os.path.splitext(url)[1]  # change to request.url after deprecation
+    return 'full/%s%s' % (media_guid, media_ext)
+```
+
+#### 扩展FilesPipeline的示例
+1、重写item_completed修改下载路径
+```Python
+import scrapy
+import os
+import re
+from scrapy.utils.project import get_project_settings
+from scrapy.pipelines.files import FilesPipeline
+
+class ScrapydownloadtestPipeline(FilesPipeline):
+    FILES_STORE = get_project_settings().get("FILES_STORE")
+
+    def get_media_requests(self, item, info):
+        yield scrapy.Request(item["file_url"],
+            meta={"download_timeout":3000,#下载器在超时前等待的时间量（以秒为单位）默认： 180
+                  "download_maxsize":4294967296,#默认值：1073741824（1024MB）下载程序将下载的最大响应大小（以字节为单位）。如果要禁用它，请将其设置为0。
+                  "download_warnsize":209715200#默认值：33554432（32MB）下载程序将开始发出警告的响应大小（以字节为单位）。如果要禁用它，请将其设置为0。
+                  })
+
+    def item_completed(self, results, item, info):
+        file_info = [x for ok,x in results if ok]
+        if len(file_info)==0:
+            return
+        mp4 = ".mp4"
+        match = re.search(r".+(\.\w+)$",file_info[0]["url"])
+        if match:
+            mp4 = match.group(1)
+        os.rename(self.FILES_STORE + "/" + file_info[0]["path"],
+                  self.FILES_STORE + "/" + item["file_name"]+mp4)
+```
+
+2、重写file_path修改下载路径
+```Python
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import scrapy
+from scrapy.utils.project import get_project_settings
+from scrapy.pipelines.files import FilesPipeline
+
+class Mp3LoadPipeline(FilesPipeline):
+    FILES_STORE = get_project_settings().get("FILES_STORE")
+
+    def open_spider(self, spider):
+        self.spiderinfo = self.SpiderInfo(spider)
+        chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-gpu')
+        self.driver = webdriver.Chrome(chrome_options=chrome_options)
+        self.driver.implicitly_wait(0)
+        self.driver.get("file:///D:/Program%20Files/pythonide/js/text.html")
+
+
+    def get_media_requests(self, item, info):
+        name = item["name"]
+        url = item["url"]
+        tital = item["tital"]
+
+        if item["urldecode"]:
+            url = self.driver.execute_script('return mygetUrl('+url+')')
+        if url:
+            yield scrapy.Request(url,
+                                 meta={
+                                     "mp3info": {"title": name, "mp3name": tital},
+                                     "download_timeout": 3000,  # 下载器在超时前等待的时间量（以秒为单位）默认： 180
+                                     "download_maxsize": 4294967296,
+                                     # 默认值：1073741824（1024MB）下载程序将下载的最大响应大小（以字节为单位）。如果要禁用它，请将其设置为0。
+                                     "download_warnsize": 209715200
+                                     # 默认值：33554432（32MB）下载程序将开始发出警告的响应大小（以字节为单位）。如果要禁用它，请将其设置为0。
+                                 })
+
+
+
+    def file_path(self, request, response=None, info=None):
+        mp3info = request.meta["mp3info"]
+        return '{0}/{1}'.format(mp3info["title"],mp3info["mp3name"].replace("\"","").replace("'","")
+                                .replace("/", "").replace(":", "").replace("*", "").replace("?", "")
+                                .replace("<", "").replace(">", "").replace("|", "")+".mp3")
+
+    def close_spider(self, spider):
+        if self.driver:
+            self.driver.close()
+```
