@@ -68,6 +68,9 @@ process_exception() 应该返回以下之一: 返回 None 、 一个 Response �
 * 如果其返回一个 Response 对象，则已安装的中间件链的 process_response() 方法被调用。Scrapy将不会调用任何其他中间件的 process_exception() 方法。  
 * 如果其返回一个 Request 对象， 则返回的request将会被重新调用下载。这将停止中间件的 process_exception() 方法执行，就如返回一个response的那样。  
 
+#### from_crawler（cls，crawler ）
+如果给出，这个类方法将会被调用从Crawler创建一个DownloaderMiddleware实例，它必须返回一个SpiderMiddleware的新的实例，Crawler对象提供了调用scrapy所有的核心组件的权限，比如你可以调用settings里面的设置项。
+
 ## 内置Downloader Middleware介绍
 关于默认启用的中间件列表(及其顺序)请参考 [DOWNLOADER_MIDDLEWARES_BASE](http://blog.csdn.net/guodongxiaren "DOWNLOADER_MIDDLEWARES_BASE") 设置。  
 
