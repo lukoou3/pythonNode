@@ -433,3 +433,276 @@ createIndex() 接收可选参数，可选参数列表如下：
 | default_language | string | 对于文本索引，该参数决定了停用词及词干和词器的规则的列表。 默认为英语 |
 | language_override | string | 对于文本索引，该参数指定了包含在文档中的字段名，语言覆盖默认的language，默认值为 language. |
 
+### MongoDB 正则表达式
+**了解MongoDB 正则表达式即可，使用代码过滤更方便**
+
+考虑以下 posts 集合的文档结构，该文档包含了文章内容和标签：
+```sql
+{
+   "post_text": "enjoy the mongodb articles on runoob",
+   "tags": [
+      "mongodb",
+      "runoob"
+   ]
+}
+```
+
+#### 使用正则表达式
+以下命令使用正则表达式查找包含 runoob 字符串的文章：
+```sql
+>db.posts.find({post_text:{$regex:"runoob"}})
+```
+以上查询也可以写为：
+```sql
+>db.posts.find({post_text:/runoob/})
+```
+
+#### 不区分大小写的正则表达式
+如果检索需要不区分大小写，我们可以设置 $options 为 $i。
+```sql
+>db.posts.find({post_text:{$regex:"runoob",$options:"$i"}})
+```
+
+#### 数组元素使用正则表达式
+我们还可以在数组字段中使用正则表达式来查找内容。 这在标签的实现上非常有用，如果你需要查找包含以 run 开头的标签数据(ru 或 run 或 runoob)， 你可以使用以下代码：
+```sql
+>db.posts.find({tags:{$regex:"run"}})
+```
+
+正则表达式中使用变量。一定要使用eval将组合的字符串进行转换，不能直接将字符串拼接后传入给表达式。否则没有报错信息，只是结果为空！实例如下：
+```sql
+var name=eval("/" + 变量值key +"/i"); 
+```
+以下是模糊查询包含title关键词, 且不区分大小写:
+```sql
+title:eval("/"+title+"/i")    // 等同于 title:{$regex:title,$Option:"$i"}  
+```
+
+### MongoDB 聚合管道
+在讲解聚合管道（Aggregation Pipeline）之前，我们先介绍一下 MongoDB 的聚合功能，聚合操作主要用于对数据的批量处理，往往将记录按条件分组以后，然后再进行一系列操作，例如，求最大值、最小值、平均值，求和等操作。聚合操作还能够对记录进行复杂的操作，主要用于数理统计和数据挖掘。在 MongoDB 中，聚合操作的输入是集合中的文档，输出可以是一个文档，也可以是多条文档。
+
+MongoDB 提供了非常强大的聚合操作，有三种方式：  
+* 聚合管道（Aggregation Pipeline）  
+* 单目的聚合操作（Single Purpose Aggregation Operation）  
+* MapReduce 编程模型  
+
+在本篇中，重点讲解聚合管道和单目的聚合操作。
+
+#### 1、单目的聚合操作
+
+单目的聚合命令，常用的：count()、distinct()，与聚合管道相比，单目的聚合操作更简单，使用非常频繁。
+##### 方法distinct()对数据进行去重  
+语法
+```
+db.集合名称.distinct('去重字段',{条件})
+```
+例1:查找年龄大于18的性别（去重）
+```
+db.stu.distinct('gender',{age:{$gt:18}})  
+```
+看一下distinct()工作流程
+![782445-20170410225818282-590231252](/assets/782445-20170410225818282-590231252.png)
+
+##### 方法count()用于统计结果集中文档条数  
+语法
+```
+db.集合名称.find({条件}).count()
+```
+也可以合为
+```
+db.集合名称.count({条件})
+```
+例1：统计男生人数
+```
+db.stu.find({gender:1}).count()
+```
+例2：统计年龄大于20的男生人数
+```
+db.stu.count({age:{$gt:20},gender:1})
+```
+
+#### 2、聚合管道
+聚合管道是 MongoDB 2.2版本引入的新功能。它由阶段（Stage）组成，文档在一个阶段处理完毕后，聚合管道会把处理结果传到下一个阶段。
+
+聚合管道功能：  
+* 对文档进行过滤，查询出符合条件的文档  
+* 对文档进行变换，改变文档的输出形式  
+
+每个阶段用 **阶段操作符（Stage Operators）** 定义，在每个阶段操作符中可以用 **表达式操作符（Expression Operators）** 计算总和、平均值、拼接分割字符串等相关操作，直到每个阶段进行完成，最终返回结果，返回的结果可以直接输出，也可以存储到集合中。
+
+MongoDB 中使用 **db.COLLECTION_NAME.aggregate([{<stage>},...])** 方法来构建和使用聚合管道。先看下官网给的实例，感受一下聚合管道的用法。
+![782445-20170410112205954-187879090](/assets/782445-20170410112205954-187879090.png)
+
+`实例中，$match 用于获取 status = "A" 的记录，然后将符合条件的记录送到下一阶段 $group 中进行分组求和计算，最后返回 Results。其中，$match、$group 都是阶段操作符，而阶段 $group 中用到的 $sum 是表达式操作符。`
+
+##### 聚合(aggregate)语法：
+```
+db.集合名称.aggregate([{管道:{表达式}}])
+```
+
+##### 管道
+常用管道
+* `$group`：将集合中的文档分组，可用于统计结果  
+* `$match`：过滤数据，只输出符合条件的文档  
+* `$project`：修改输入文档的结构，如重命名、增加、删除字段、创建计算结果  
+* `$sort`：将输入文档排序后输出  
+* `$limit`：限制聚合管道返回的文档数  
+* `$skip`：跳过指定数量的文档，并返回余下的文档  
+* `$unwind`：将数组类型的字段进行拆分   
+
+##### 表达式
+语法：
+```
+表达式:'$列名'
+```
+常用表达式
+* `$sum`：计算总和，`$sum:1`同count表示计数
+* `$avg`：计算平均值
+* `$min`：获取最小值
+* `$max`：获取最大值
+* `$push`：在结果文档中插入值到一个数组中
+* `$first`：根据资源文档的排序获取第一个文档数据 
+* `$last`：根据资源文档的排序获取最后一个文档数据
+
+##### $group
+* 将集合中的文档分组，可用于统计结果    
+* _id表示分组的依据，使用某个字段的格式为'$字段'    
+
+例1：统计男生、女生的总人数
+```
+db.stu.aggregate([
+    {$group:
+        {
+            _id:'$gender',
+            counter:{$sum:1}
+        }
+    }
+])
+```
+
+###### Group by null
+将集合中所有文档分为一组
+
+例2：求学生总人数、平均年龄
+```
+db.stu.aggregate([
+    {$group:
+        {
+            _id:null,
+            counter:{$sum:1},
+            avgAge:{$avg:'$age'}
+        }
+    }
+])
+```
+
+###### 透视数据
+例3：统计学生性别及学生姓名
+```
+db.stu.aggregate([
+    {$group:
+        {
+            _id:'$gender',
+            name:{$push:'$name'}
+        }
+    }
+])
+```
+
+使用`$$ROOT`可以将文档内容加入到结果集的数组中，代码如下
+```
+db.stu.aggregate([
+    {$group:
+        {
+            _id:'$gender',
+            name:{$push:'$$ROOT'}
+        }
+    }
+])
+```
+
+##### $match
+* 用于过滤数据，只输出符合条件的文档  
+* 使用MongoDB的标准查询操作  
+
+例1：查询年龄大于20的学生
+```
+db.stu.aggregate([
+    {$match:{age:{$gt:20}}}
+])
+```
+例2：查询年龄大于20的男生、女生人数
+```
+db.stu.aggregate([
+    {$match:{age:{$gt:20}}},
+    {$group:{_id:'$gender',counter:{$sum:1}}}
+])
+```
+
+##### $project
+修改输入文档的结构，如重命名、增加、删除字段、创建计算结果
+
+例1：查询学生的姓名、年龄
+```
+db.stu.aggregate([
+    {$project:{_id:0,name:1,age:1}}
+])
+```
+例2：查询男生、女生人数，输出人数
+```
+db.stu.aggregate([
+    {$group:{_id:'$gender',counter:{$sum:1}}},
+    {$project:{_id:0,counter:1}}
+])
+```
+
+##### $sort
+将输入文档排序后输出
+
+例1：查询学生信息，按年龄升序
+```
+b.stu.aggregate([{$sort:{age:1}}])
+```
+例2：查询男生、女生人数，按人数降序
+```
+db.stu.aggregate([
+    {$group:{_id:'$gender',counter:{$sum:1}}},
+    {$sort:{counter:-1}}
+])
+```
+
+##### `$limit、$skip`
+例1：查询2条学生信息
+```
+db.stu.aggregate([{$limit:2}])
+```
+例2：查询从第3条开始的学生信息
+```
+db.stu.aggregate([{$skip:2}])
+```
+例3：统计男生、女生人数，按人数升序，取第二条数据
+```
+db.stu.aggregate([
+    {$group:{_id:'$gender',counter:{$sum:1}}},
+    {$sort:{counter:1}},
+    {$skip:1},
+    {$limit:1}
+])
+注意顺序：先写skip，再写limit
+```
+
+##### $unwind
+将文档中的某一个数组类型字段拆分成多条，每条包含数组中的一个值
+
+对某字段值进行拆分
+```
+db.集合名称.aggregate([{$unwind:'$字段名称'}])
+```
+构造数据
+```
+db.t2.insert({_id:1,item:'t-shirt',size:['S','M','L']})
+```
+查询
+```
+db.t2.aggregate([{$unwind:'$size'}])
+```
