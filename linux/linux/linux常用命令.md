@@ -587,3 +587,39 @@ pstree [选项]
 选项:   
 -p: 显示进程的 PID
 -u: 显示进程的所属用户
+
+## 后台服务管理类
+#### 1、service 后台服务管理
+基本语法:   
+```
+1)service network status 查看指定服务的状态
+2)service network stop 停止指定服务
+3)service network start 启动指定服务
+4)service network restart 重启指定服务
+5)service --status-all 查看系统中所有的后台服务
+```
+
+#### 2、chkconfig 设置后台服务的自启配置
+基本语法:   
+```
+1)chkconfig 查看所有服务器自启配置
+2)chkconfig iptables off 关掉指定服务的自动启动
+3)chkconfig iptables on 开启指定服务的自动启动
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
