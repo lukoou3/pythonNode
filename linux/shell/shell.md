@@ -309,14 +309,82 @@ read -t 7 -p "please 7 miao input your name " NAME
 echo $NAME
 ```
 
+## 函数
+#### 系统函数
+##### basename
+basename 命令会删掉所有的前缀包括最后一个(‘/’)字符,然后将字符串显示出来。  
+基本语法：
+```  
+basename [pathname] [suffix]  
+basename [string] [suffix]  
+```
+选项:  
+suffix 为后缀,如果 suffix 被指定了,basename 会将 pathname 或 string 中的 suffix 去掉。
 
+例子：
+```  
+$ basename /opt/test.txt
+test.txt
+$ basename /opt/test.txt .txt
+test  
+```
+##### dirname
+从给定的包含绝对路径的文件名中去除文件名(非目录的部分),然后返回剩下的路径(目录的部分)。  
+基本语法：
+```  
+dirname 文件绝对路径 
+```
+例子：
+```  
+$ dirname /opt/test.txt
+/opt
+```
 
+#### 自定义函数
+语法：
+```
+[ function ] funname [()]
+{
+    action;
+    [return int;]
+}
 
+function start()  / function start / start()
+```
+注意：  
+* 1.必须在调用函数地方之前，先声明函数，shell脚本是逐行运行。不会像其它语言一样先预编译
+* 2.函数返回值，只能通过`$?` 系统变量获得，可以显示加 return 返回，如果不加，将以最后一条命令运行结果，作为返回值。 return后跟数值n(0-255)
 
-
-
-
-
+例子：  
+(1)计算输入参数的和
+```
+#!/bin/bash
+function sum()
+{
+    s=0
+    s=$[ $1 + $2 ]
+    echo "$s"
+}
+read -p "Please input the number1: " n1;
+read -p "Please input the number2: " n2;
+sum $n1 $n2;
+```
+(2)打印出比你输入小的所有数
+```
+function LoopPrint()
+{
+    count=0;
+    while [ $count -lt $1 ] ;
+    do
+        echo $count;
+        expr ++count;
+        sleep 1;
+    done
+    return 0;
+}
+read -p "Please input the number: " n;
+LoopPrint $n;
+```
 
 
 
