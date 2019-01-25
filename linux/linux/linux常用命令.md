@@ -108,7 +108,7 @@ mkdir [-p] 要创建的目录
 选项:  
 -p:创建多层目录
 
-#### 5、mdir 删除一个空的目录
+#### 5、rmdir 删除一个空的目录
 rmdir:Remove directory 删除目录
 基本语法:  
 ```
