@@ -1,0 +1,2 @@
+scrapy shell "http://www.artx.cn/user/login.asp?act=submit&duser=lukou3&dpwd=l184521
+response.xpath("//div[@id='r_zhengwen']").get()
