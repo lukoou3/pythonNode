@@ -218,29 +218,345 @@ def __del__(self):
 ```
 为什么要加上这句呢？我们以前写的时候很少加上这句啊。因为在执行程序的时候，可能会出现关闭程序QWebEngineView崩溃的情况，加上这句就是让系统加快释放这部分内存，避免QWebEngineView崩溃的情况。
 
+## QWebChannel
+#### 总体介绍
+QWebChannel填补了C++应用程序（这里是针对Qt，PyQt5是Python）和HTML / JavaScript应用程序之间的空白。通过将QObject派生对象发布到QWebChannel并在HTML端使用qwebchannel.js，可以透明地访问QObject的属性和公共函数和方法。不需要手动消息传递和数据序列化，Python端的属性更新和信号发射会自动传输到可能远程运行的HTML客户端。在客户端，将为任何已发布的QObject创建JavaScript对象。它反映了对象的API，因此直观易用。
 
+QWebChannel API可以与任何可以在本地甚至远程计算机上运行的HTML客户端进行通信。唯一的限制是HTML客户端支持qwebchannel.js使用的JavaScript功能。因此，人们可以与基本上任何现代HTML浏览器或独立JavaScript运行时进行交互，例如node.js。
 
+**要点**  
+* 创建交互对象, 基于QObject, 定义信息槽  
+* 创建QWebChannel, 在channel中注册交互对象  
+* 设置页面WebChannel  
+* 定义网页在网页中包含qwebchannel.js 在DomReady时, 创建js QWebChannel, 连接到本地对象  
 
+**使用步骤**：  
+1）发布QObject的衍生对象到QWebChannel，JS端通过使用qwebchannel.js可透明地获取该对象的共有函数与属性；  
+2）C++端的属性根性和信号发射都自动发射到可能运行的JS端，JS端将创建相应的JS对象，直接使用C++对象中的API；  
 
+**特性**  
+1.使用Object标签可嵌入QT Widget组件；  
+2.JS可直接访问C++对象（共有函数与属性）；  
+3.QT中能触发JS中的事件；  
+4.可共享客户端存储的数据。  
 
+#### QObjects交互
+一旦调用传递给QWebChannel对象的回调，通道就完成了初始化，并且HTML客户端可以通过channel.objects属性访问所有已发布的对象。因此，假设一个对象是使用标识符“foo”发布的，那么我们可以与它进行交互，如下例所示。请注意，HTML客户端和QML / C ++服务器之间的所有通信都是异步的。属性缓存在HTML端。此外，请记住，只有可以转换为JSON的QML / C ++数据类型才能正确地(反)序列化，从而可以被HTML客户端访问。
 
+**QObjects交互的使用总结**：页面上可以访问QObjects对象的属性和方法，但是方法必须是槽函数。Qt向页面发送信息：可以通过runJavaScript调用页面js代码，可以通过QObjects发射信号调用页面注册的槽函数连接。页面向Qt发送信息：可以调用QObjects对象的槽函数，函数返回值通过回调函数接受；可以访问QObjects对象的属性，通过魔法方法实现信息传递。Qt与页面之间的参数传递只支持str、int、list等一部分不支持dict，可能是c++的原因吧。
 
+官网html建立连接代码：
+```python
+new QWebChannel(yourTransport, function(channel) {
+    // 连接信号:
+    channel.objects.foo.mySignal.connect(function() {
+    //只要在C ++ / QML端发出信号，就会调用此回调。
+        console.log(arguments);
+    }); 
+    
+    //要使对象全局知道，请将其赋值给window对象，即：
+    window.foo = channel.objects.foo;
+    
+    //调用方法：
+    foo.myMethod(arg1, arg2, function(returnValue) {
+         //当myMethod有返回值时，将调用此回调。
+        //通信是异步的，因此需要这个回调。
+        console.log(returnValue);
+    });
+         
+    //读取在客户端缓存的属性值：
+    console.log(foo.myProperty);
+    
+    //编写属性将立即更新客户端缓存。
+    //将异步通知远程端有关更改的信息
+    foo.myProperty = "Hello World!"; 
+    
+    //要获得有关远程属性更改的通知，
+    //只需连接到相应的通知信号：
+    foo.onMyPropertyChanged.connect(function(newValue) {
+            console.log(newValue);
+    });
+            
+    //也可以访问标有Q_ENUM的枚举：
+    console.log(foo.MyEnum.MyEnumerator);
+});
+```
 
+小示例：
+html
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="qwebchannel.js"></script>
+    <title>QWebChannel测试</title>
+    <script>
+        window.onload = function () {
+            new QWebChannel(qt.webChannelTransport, function (channel) {
+                window.pyjs = channel.objects.pyjs;
+                pyjs.myHello(alert);
+            });
+        }
+    </script>
+</head>
+<body>
+<div id="test">
+    this is test !
+</div>
+<div onclick="qt5test();">测试</div>
 
+<script>
+    function qt5test() {
+       pyjs.myTest('这是测试传参的',function (res) {
+            alert(res);
+        });
+    }
+    function uptext(msg) {
+        document.getElementById('test').innerHTML=msg;
+    }
+</script>
+</body>
+</html>
+```
+python
+```python
+import sys
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QObject, pyqtSlot, QUrl
+from PyQt5.QtWebChannel import QWebChannel
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 
+class CallHandler(QObject):
+    @pyqtSlot(result = str)
+    def myHello(self):
+        view.page().runJavaScript('uptext("hello, Python");')
+        print('call received')
+        return 'hello, Python'
+    
+   @pyqtSlot(str,result=str)
+    def myTest(self,test):
+        return test
 
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    view = QWebEngineView()
+    channel = QWebChannel()
+    handler = CallHandler()
+    channel.registerObject('pyjs', handler)
+    view.page().setWebChannel(channel)
+    url_string = "file:///D:/testPyQt5/html/index.html"
+    view.load(QUrl(url_string))
+    view.show()
+    sys.exit(app.exec_())
+```
 
+#### 例子
+效果：
+![](assets/markdown-img-paste-20190312202418796.png)
+python端：
+```python
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtCore import QObject, pyqtSlot, QUrl,pyqtSignal
+from PyQt5.QtWebChannel import QWebChannel
+import os
+import json
 
+class Ui_Form(object):
+    def setupUi(self, Form):
+        Form.setObjectName("Form")
+        Form.resize(728, 480)
+        self.horizontalLayout = QtWidgets.QHBoxLayout(Form)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.label = QtWidgets.QPlainTextEdit(Form)
+        self.label.setMinimumSize(QtCore.QSize(80, 0))
+        self.label.setReadOnly(True)
+        self.label.appendPlainText("")
+        self.label.setObjectName("label")
+        self.verticalLayout.addWidget(self.label)
+        self.pushButton = QtWidgets.QPushButton(Form)
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton1 = QtWidgets.QPushButton(Form)
+        self.pushButton1.setObjectName("pushButton1")
+        self.lineEdit = QtWidgets.QLineEdit(Form)
+        self.lineEdit.setMinimumSize(QtCore.QSize(80, 0))
+        self.lineEdit.setObjectName("lineEdit")
+        self.verticalLayout.addWidget(self.lineEdit)
+        self.verticalLayout.addWidget(self.pushButton)
+        self.verticalLayout.addWidget(self.pushButton1)
+        self.horizontalLayout.addLayout(self.verticalLayout)
+        self.webView = QWebEngineView(Form)
+        #self.webView.setUrl(QtCore.QUrl("about:blank"))
+        self.webView.setObjectName("webView")
+        self.webView.setMinimumSize(QtCore.QSize(500, 0))
+        self.horizontalLayout.addWidget(self.webView)
 
+        self.retranslateUi(Form)
+        QtCore.QMetaObject.connectSlotsByName(Form)
 
+    def retranslateUi(self, Form):
+        _translate = QtCore.QCoreApplication.translate
+        Form.setWindowTitle(_translate("Form", "web"))
+        self.pushButton.setText(_translate("Form", "发送(run js)"))
+        self.pushButton1.setText(_translate("Form", "发送(信号槽)"))
 
+class JsConnect(QObject):
+    signalFromJS = pyqtSignal(dict)
+    signalToJS = pyqtSignal(str)
 
+    def sendMessageToJS(self, msg):
+        self.signalToJS.emit(msg)
 
+    @pyqtSlot(str)
+    def sendMessageFromJS(self, msg):
+        print('sendMessageFromJS:{}'.format(msg))
+        self.signalFromJS.emit(json.loads(msg))
 
+    @pyqtSlot(list,result=str)
+    def publicFunction(self, msg):
+        print('sendMessageFromJS2:{}'.format(msg[0]))
+        return msg[0]
 
+    @pyqtSlot(str,result=list)
+    def publicFun(self,msg):
+        print('sendMessageFromJS3{}'.format(msg))
+        #return "ssss"
+        return ["ssss",1,"344"]
 
+class Ui_Main(QtWidgets.QWidget,Ui_Form):
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setupUi(self)
+        #self.init()
 
+    def init(self):
+        channel = QWebChannel()
+        jsConnect = JsConnect()
+        channel.registerObject('connect', jsConnect)
+        self.webView.page().setWebChannel(channel)
 
+        jsConnect.signalFromJS.connect(self.onReceiveMessageFromJS)
+        self.jsConnect = jsConnect
 
+        if True:
+            print( "file:///{}".format(os.path.abspath("QWebEngineView_page.html")) )
+            self.webView.load(QUrl("file:///D:/pycharmWork/pythonTest/pyqtTest/QWebEngineView/QWebEngineView_page.html"))
+        else:
+            with open("./QWebEngineView_page.html") as fp:
+                html = fp.read()
+                self.webView.setHtml(html)
 
+        self.pushButton.clicked.connect(self.sendMessageToJS)
+        self.pushButton1.clicked.connect(self.sendMessageByRunJavaScript)
 
+    def aa(self):
+        self.webView.load(
+            QUrl("file:///D:/pycharmWork/pythonTest/pyqtTest/QWebEngineView/QWebEngineView_page.html"))
+
+        self.pushButton.clicked.connect(self.sendMessageToJS)
+        self.pushButton1.clicked.connect(self.sendMessageByRunJavaScript)
+
+    def sendMessageToJS(self):
+        msg = self.lineEdit.text()
+        self.jsConnect.sendMessageToJS(json.dumps({"msg":msg}))
+        self.lineEdit.setText("")
+
+    def onReceiveMessageFromJS(self,msg):
+        self.label.appendPlainText(str(msg))
+
+    def sendMessageByRunJavaScript(self):
+        msg = self.lineEdit.text()
+        self.webView.page().runJavaScript("""receiveMsg(JSON.stringify({}));""".format(json.dumps({"msg":msg})))
+        self.lineEdit.setText("")
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    widget = Ui_Main()
+    widget.show()
+
+    widget.aa()
+
+    channel = QWebChannel()
+    jsConnect = JsConnect()
+    channel.registerObject('connect', jsConnect)
+    widget.webView.page().setWebChannel(channel)
+
+    jsConnect.signalFromJS.connect(widget.onReceiveMessageFromJS)
+    widget.jsConnect = jsConnect
+
+    sys.exit(app.exec_())
+
+```
+html端：
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script type="text/javascript" src="qwebchannel.js"></script>
+<style type="text/css">
+    *{
+      margin: 0;
+      padding: 0;
+    }
+    html {
+        height: 98%;
+        width: 100%;
+    }
+    #input {
+        width: 98%;
+    }
+    #send {
+        width: 98px;
+        margin:5px;
+    }
+    #output {
+        width: 98%;
+        height: 405px;
+    }
+</style>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function () {
+    new QWebChannel( qt.webChannelTransport, function(channel) {
+        var input = document.getElementById("input");
+        input.value = 11;
+        window.connect = channel.objects.connect;
+
+        ////Web connect the Qt signal, then Qt can call callback function
+        connect.signalToJS.connect(function(msg){
+            var output = document.getElementById("output");
+            output.innerHTML = output.innerHTML + msg + "\n";
+        });
+    });
+});
+
+function receiveMsg(msg) {
+    var output = document.getElementById("output");
+    output.innerHTML = output.innerHTML + msg + "\n";
+}
+function sendMsg() {
+    var input = document.getElementById("input");
+    var msg = input.value;
+    connect.sendMessageFromJS(JSON.stringify({"msg":msg}))
+    connect.publicFunction([msg,1])
+    connect.publicFun(msg,function(data){
+        input.value = data;
+    });
+}
+</script>
+<body>
+    <textarea id="output" readonly="readonly"></textarea><br />
+    <input id="input" />
+    <input type="submit" id="send" value="发送" onclick="sendMsg();" />
+</body>
+</html>
+```
+基本所有的通信方法都有测试方法，不错。
+
+不知道为啥注册QWebChannel的代码写到Ui_Main的方法（init）里页面就无法建立连接，放到外面就行，妈的。
