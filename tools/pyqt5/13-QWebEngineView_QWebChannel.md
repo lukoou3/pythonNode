@@ -1,4 +1,40 @@
 ## QWebEngineView
+#### 主要函数
+| 方法                                       | 描述                                 |
+| ------------------------------------------ | ------------------------------------ |
+| load(QUrl url)                             | 加载指定的URL并显示                  |
+| setHtml（String html）                     | 将网页视图的内容设置为指定的HTML内容 |
+| QWebEnginePage.runJavaScript(str,Callable) | 调用页面JavaScript代码               |
+
+```python
+class QWebEngineView(__PyQt5_QtWidgets.QWidget):
+    """ QWebEngineView(parent: QWidget = None) """
+    def __init__(self, parent=None): # real signature unknown; restored from __doc__
+        pass
+    
+    def load(self, QUrl): # real signature unknown; restored from __doc__
+        """ load(self, QUrl) """
+        pass
+    
+    def setHtml(self, p_str, baseUrl=None, *args, **kwargs): # real signature unknown; NOTE: unreliably restored from __doc__ 
+        """ setHtml(self, str, baseUrl: QUrl = QUrl()) """
+        pass
+    
+class QWebEnginePage(__PyQt5_QtCore.QObject):
+    """
+    QWebEnginePage(parent: QObject = None)
+    QWebEnginePage(QWebEngineProfile, parent: QObject = None)
+    """
+    
+    def runJavaScript(self, p_str, *__args): # real signature unknown; restored from __doc__ with multiple overloads
+        """
+        runJavaScript(self, str, int)
+        runJavaScript(self, str, int, Callable[..., None])
+        runJavaScript(self, str)
+        runJavaScript(self, str, Callable[..., None])
+        """
+        pass
+```
 #### QWebEngineView总体介绍
 QWebEngineView类提供了一个用于查看和编辑Web文档的小部件。
 
@@ -33,28 +69,9 @@ view.show()
 我们再演示一个打开本地HTML，简略的代码如下：
 ```python
 view = QWebEngineView(self)
-view.load(QUrl("C:/Users/Administrator/Desktop/paoku/index.html"))
+view.load(QUrl("file:///D:/pycharmWork/pythonTest/pyqtTest/QWebEngineView/QWebEngineView_page.html"))
+#view.load(QUrl("file:///home/lifengchao/PycharmProjects/pythonTest/pyqtTest/QWebEngineView/QWebEngineView_page.html"))
 view.show()
-```
-这里特别强调一下：QUrl里面的请放入绝对地址，不要放入类似：”./index.html”这种相对地址，即使是在同一目录下面。
-
-可能你会说：我不，我就要用相对地址，怎么办？
-
-这种情况的解决方式可以是这样的：
-```python
-view = QWebEngineView(self)
-url = QUrl(QFileInfo("./pie-simple.html").absoluteFilePath())
-view.load(url)
-```
-返回包含文件名的绝对路径。
-```python
-QUrl(QFileInfo("./pie-simple.html").absoluteFilePath())
-```
-绝对路径名由完整路径和文件名组成。 在Unix上，这将始终以root，’/‘目录开头。 在Windows上，这将始终以’D：/‘开头，其中D是驱动器号，但未映射到驱动器号的网络共享除外，在这种情况下，路径将以’// sharename /‘开头。 QFileInfo将大写驱动器号。
-
-当然Python中也有类似的语言:
-```python
-url = QUrl(os.path.abspath("./pie-simple.html"))
 ```
 
 类归属
