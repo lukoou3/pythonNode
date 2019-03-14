@@ -1,4 +1,6 @@
 ## QWebEngineView
+pyqt5.12版本后qwebengine模块独立，安装请使用命令pip3 install PyQtWebEngine
+
 #### 主要函数
 | 方法                                       | 描述                                 |
 | ------------------------------------------ | ------------------------------------ |
@@ -81,6 +83,21 @@ PyQt5->QtWebEngine->QWebEngineView
 PyQt5->QObject and QPaintDevice->QWidget->QWebEngineView
 
 更多详细的介绍请见官网：[QWebEngineView](https://doc.qt.io/qt-5/qwebengineview.html "QWebEngineView")
+
+#### QWebEngine增加DEBUG模式
+在 代码中加入 下列代码：
+```python
+import os
+os.putenv("QTWEBENGINE_REMOTE_DEBUGGING", "8001")
+```
+以上代码的意思是改变环境变量，端口号随意
+**以上代码必须在QWebEngineView初始化之前，不然无法进入调试模式**
+
+运行程序后，看到控制台输出：
+```python
+Remote debugging server started successfully. Try pointing a Chromium-based browser to http://127.0.0.1:8001
+```
+在浏览器打开 http://127.0.0.1:8001 即可调试
 
 #### 例子
 实现效果：
