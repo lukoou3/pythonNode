@@ -253,3 +253,17 @@ if __name__ == '__main__':
 
 
 
+###### open、io.open、codecs.open之间的区别？
+最早的时候，只有open。
+你知道的，Python 2的编码多么蛋疼，所以，就有了codecs.open.
+
+至于io.open，其实是因为Python 2的open实际上是file模块提供的，而Python 3的open是io模块提供的。然后，Python 2.6引入了这个Python 3的特性，叫做io.open，以便和原来的open相区分。
+
+但是，这个Python 2.6的io.open是有问题的，在一些情况下表现很怪异。Python 2.7的io.open就正常了。
+
+
+个人建议：
+
+Python3直接用open。
+Python2.x下用codecs.open，特别是有中文的情况，然后也可以避免踩到2.6下面io.open的坑。
+如果希望代码同时兼容Python2和Python3，那么推荐用codecs.open。
