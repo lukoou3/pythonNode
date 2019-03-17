@@ -76,3 +76,22 @@ if __name__=="__main__":
     myshow.show()
     sys.exit(app.exec_())
 ```
+
+#### QScrollArea
+很多刚接触QScrollArea的朋友，不知道如何使用QScrollArea，以至于无法显示滚动条。
+
+首先QScrollArea类提供了关于另一个窗口的滚动的视图。一个滚动区域通常用来显示在frame中的子窗口。如果这个子窗口超过了frame的大小，这个视图就会自动提供滚动条，这样子窗口的整个内容，都可以被用户看到。这个子窗口必须被指定函数setWidget()。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
