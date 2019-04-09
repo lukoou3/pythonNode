@@ -43,3 +43,14 @@ sc delete MongoDB
 ```
 mongod --remove --serviceName "MongoDB"
 ```
+
+## Ubuntu中mongodb服务无法启动的问题
+#### 主要问题
+虽然能够成功安装MongoDB，并且能够正常启动MongoDB服务，但是当Ubuntu重启或者服务关掉之后，再次启动就会遇到下列问题
+![1917338942-5979aa8820188_articlex](/assets/1917338942-5979aa8820188_articlex.png)
+
+这个时候尝试下面的命令，会启动MongoDB，但是这个终端不能关闭
+```
+sudo mongod
+```
+
