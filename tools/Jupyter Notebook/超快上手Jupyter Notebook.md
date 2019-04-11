@@ -20,7 +20,7 @@ Jupyter Notebook是一个开源的Web应用程序，允许用户创建和共享�
 如果已经安装了Python 3：
 ```python
 python3 -m pip install --upgrade pip
-pi3 install jupyter
+pip3 install jupyter
 ```
 如果已经安装了Python 2：
 ```python
