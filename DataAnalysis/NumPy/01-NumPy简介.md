@@ -4,3 +4,27 @@ https://www.cnblogs.com/zhouzhou0/p/10434187.html
 
 https://www.cnblogs.com/nxld/p/6058591.html
 
+分级索引：
+http://pandas.pydata.org/pandas-docs/stable/user_guide/advanced.html#advanced-hierarchical
+
+https://www.jianshu.com/p/760cd4f46c8d
+
+https://blog.csdn.net/anshuai_aw1/article/details/83510345
+
+https://nbviewer.jupyter.org/github/LearnXu/pydata-notebook/blob/master/Chapter-08/8.1%20Hierarchical%20Indexing%EF%BC%88%E5%88%86%E5%B1%82%E7%B4%A2%E5%BC%95%EF%BC%89.ipynb
+
+http://liao.cpython.org/pda17/
+
+
+
+python学习网站：http://liao.cpython.org/
+
+
+
+使用大型数据集的pandas：
+https://www.dataquest.io/blog/pandas-big-data/
+
+https://www.sohu.com/a/164793784_505915
+
+
+
