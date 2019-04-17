@@ -33,8 +33,23 @@ https://www.jianshu.com/p/20169d7f60bc
 
 https://www.yiibai.com/pandas/python_pandas_categorical_data.html
 
+https://blog.csdn.net/chenvast/article/details/83652677
+
 
 query:
 https://blog.csdn.net/tcy23456/article/details/85887334
 
 http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#indexing-query
+
+pandas:
+https://blog.csdn.net/ChenVast/article/details/86570586
+
+https://blog.csdn.net/ChenVast/article/details/82754398
+
+https://segmentfault.com/a/1190000018565157
+
+https://python.freelycode.com/contribution/detail/1309
+
+https://python.freelycode.com/contribution/detail/1310
+
+https://realpython.com/python-pandas-tricks/
