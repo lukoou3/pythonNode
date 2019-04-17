@@ -28,3 +28,13 @@ https://www.sohu.com/a/164793784_505915
 
 
 
+Categorical:
+https://www.jianshu.com/p/20169d7f60bc
+
+https://www.yiibai.com/pandas/python_pandas_categorical_data.html
+
+
+query:
+https://blog.csdn.net/tcy23456/article/details/85887334
+
+http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#indexing-query
