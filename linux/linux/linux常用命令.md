@@ -358,6 +358,154 @@ grep [-选项] ‘搜索内容串’文件名
 which 命令    (功能描述:搜索命令所在目录及别名信息)
 ```
 
+## 时间日期类
+基本语法
+```
+date [OPTION]... [+FORMAT]
+```
+#### 1、date 设置系统时间
+基本语法:
+```
+date -s 字符串时间
+```
+
+例如：
+```
+date -s "2017-06-19 20:52:18"
+```
+
+#### 2、date 显示当前时间
+基本语法:
+```
+（ 1） date （功能描述： 显示当前时间）
+（ 2） date +%Y （功能描述： 显示当前年份）
+（ 3） date +%m （功能描述： 显示当前月份）
+（ 4） date +%d （功能描述： 显示当前是哪一天）
+（ 5） date +%Y%m%d date +%Y/%m/%d … （功能描述： 显示当前年月日各种格式 ）
+（ 6） date "+%Y-%m-%d %H:%M:%S" （功能描述：显示年月日时分秒）
+```
+
+例子：
+```
+[hadoop@hadoop01 ~]$ date
+Sun May 12 20:54:46 CST 2019
+[hadoop@hadoop01 ~]$ date +%Y
+2019
+[hadoop@hadoop01 ~]$ date + %Y
+date: extra operand `%Y'
+Try `date --help' for more information.
+[hadoop@hadoop01 ~]$ date +%Y
+2019
+[hadoop@hadoop01 ~]$ date +%m
+05
+[hadoop@hadoop01 ~]$ date +%d
+12
+[hadoop@hadoop01 ~]$ date +%Y%m%d
+20190512
+[hadoop@hadoop01 ~]$ date +%Y-%m-%d
+2019-05-12
+[hadoop@hadoop01 ~]$ date +%Y-%m-%d%H
+2019-05-1220
+[hadoop@hadoop01 ~]$ date +%Y-%m-%d %H  #中间有空格需要加引号
+date: extra operand `%H'
+Try `date --help' for more information.
+[hadoop@hadoop01 ~]$ date '+%Y-%m-%d %H'
+2019-05-12 20
+[hadoop@hadoop01 ~]$ date '+%Y%m%d'
+20190512
+[hadoop@hadoop01 ~]$ date "+%Y-%m-%d %H:%M:%S"
+2019-05-12 21:13:34
+```
+
+#### 3、显示非当前时间
+基本语法:
+```
+（ 1） date -d '1 days ago' （功能描述： 显示前一天日期）
+（ 2） date -d yesterday +%Y%m%d （同上）
+（ 3） date -d next-day +%Y%m%d （功能描述： 显示明天日期）
+（ 4） date -d 'next monday' （功能描述： 显示下周一时间）
+```
+
+例子：
+```
+[hadoop@hadoop01 ~]$ date -d '1 days ago'
+Sat May 11 21:15:33 CST 2019
+[hadoop@hadoop01 ~]$ date -d yesterday +%Y%m%d 
+20190511
+[hadoop@hadoop01 ~]$ date -d next-day +%Y%m%d
+20190513
+[hadoop@hadoop01 ~]$ date -d 'next monday'
+Mon May 13 00:00:00 CST 2019
+[hadoop@hadoop01 ~]$ date -d yesterday "+%Y-%m-%d %H:%M:%S"
+2019-05-11 21:16:42
+```
+
+#### 4、cal 查看日历
+基本语法:
+```
+cal [选项] （功能描述：不加选项，显示本月日历）
+选项：
+-3 ， 显示系统前一个月，当前月，下一个月的日历
+具体某一年，显示这一年的日历。
+```
+
+例子：
+```
+[hadoop@hadoop01 ~]$ cal
+      May 2019      
+Su Mo Tu We Th Fr Sa
+          1  2  3  4
+ 5  6  7  8  9 10 11
+12 13 14 15 16 17 18
+19 20 21 22 23 24 25
+26 27 28 29 30 31
+
+[hadoop@hadoop01 ~]$ cal -3
+     April 2019             May 2019              June 2019     
+Su Mo Tu We Th Fr Sa  Su Mo Tu We Th Fr Sa  Su Mo Tu We Th Fr Sa
+    1  2  3  4  5  6            1  2  3  4                     1
+ 7  8  9 10 11 12 13   5  6  7  8  9 10 11   2  3  4  5  6  7  8
+14 15 16 17 18 19 20  12 13 14 15 16 17 18   9 10 11 12 13 14 15
+21 22 23 24 25 26 27  19 20 21 22 23 24 25  16 17 18 19 20 21 22
+28 29 30              26 27 28 29 30 31     23 24 25 26 27 28 29
+                                            30                  
+[hadoop@hadoop01 ~]$ cal 2020
+                               2020                               
+
+       January               February                 March       
+Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa
+          1  2  3  4                      1    1  2  3  4  5  6  7
+ 5  6  7  8  9 10 11    2  3  4  5  6  7  8    8  9 10 11 12 13 14
+12 13 14 15 16 17 18    9 10 11 12 13 14 15   15 16 17 18 19 20 21
+19 20 21 22 23 24 25   16 17 18 19 20 21 22   22 23 24 25 26 27 28
+26 27 28 29 30 31      23 24 25 26 27 28 29   29 30 31
+
+        April                   May                   June        
+Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa
+          1  2  3  4                   1  2       1  2  3  4  5  6
+ 5  6  7  8  9 10 11    3  4  5  6  7  8  9    7  8  9 10 11 12 13
+12 13 14 15 16 17 18   10 11 12 13 14 15 16   14 15 16 17 18 19 20
+19 20 21 22 23 24 25   17 18 19 20 21 22 23   21 22 23 24 25 26 27
+26 27 28 29 30         24 25 26 27 28 29 30   28 29 30
+                       31
+        July                  August                September     
+Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa
+          1  2  3  4                      1          1  2  3  4  5
+ 5  6  7  8  9 10 11    2  3  4  5  6  7  8    6  7  8  9 10 11 12
+12 13 14 15 16 17 18    9 10 11 12 13 14 15   13 14 15 16 17 18 19
+19 20 21 22 23 24 25   16 17 18 19 20 21 22   20 21 22 23 24 25 26
+26 27 28 29 30 31      23 24 25 26 27 28 29   27 28 29 30
+                       30 31
+       October               November               December      
+Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa
+             1  2  3    1  2  3  4  5  6  7          1  2  3  4  5
+ 4  5  6  7  8  9 10    8  9 10 11 12 13 14    6  7  8  9 10 11 12
+11 12 13 14 15 16 17   15 16 17 18 19 20 21   13 14 15 16 17 18 19
+18 19 20 21 22 23 24   22 23 24 25 26 27 28   20 21 22 23 24 25 26
+25 26 27 28 29 30 31   29 30                  27 28 29 30 31
+
+```
+
 ## 用户管理命令
 #### 1、useradd 添加新用户
 基本语法:
@@ -607,16 +755,86 @@ pstree [选项]
 3)chkconfig iptables on 开启指定服务的自动启动
 ```
 
+## crond 系统定时任务
+#### 1、crond 服务管理
+```
+[hadoop@hadoop01 ~]$ service crond
+Usage: /etc/init.d/crond {start|stop|status|restart|condrestart|try-restart|rel
+[hadoop@hadoop01 ~]$ service crond status
+crond (pid  2366) is running...
+[hadoop@hadoop01 ~]$ service crond restart
+User has insufficient privilege.
+[hadoop@hadoop01 ~]$ sudo service crond restart
+[sudo] password for hadoop: 
+Stopping crond:                                            [  OK  ]
+Starting crond:                                            [  OK  ]
+[hadoop@hadoop01 ~]$ service crond status
+crond (pid  2962) is running...
+```
 
+#### 2、crontab 定时任务设置
+基本语法
+```
+crontab [选项]
+```
+选项：
+```
+-e： 编辑 crontab 定时任务
+-l： 查询 crontab 任务
+-r： 删除当前用户所有的 crontab 任务
+```
 
+参数说明:
+[root@localhost ~]# crontab -e
+（ 1）进入 crontab 编辑界面。会打开 vim 编辑你的工作。
+```
+* * * * * 执行的任务
+```
 
+| 项目      | 含义                 | 范围                        |
+| --------- | -------------------- | --------------------------- |
+| 第一个“*” | 一小时当中的第几分钟 | 0-59                        |
+| 第二个“*” | 一天当中的第几小时   | 0-23                        |
+| 第三个“*” | 一个月当中的第几天   | 1-31                        |
+| 第四个“*” | 一年当中的第几月     | 1-12                        |
+| 第五个“*” | 一周当中的星期几     | 0-7（ 0 和 7 都代表星期日） |
 
+（ 2）特殊符号
+| 特殊符号 | 含义                                                                                                           |
+| -------- | -------------------------------------------------------------------------------------------------------------- |
+| *        | 代表任何时间。比如第一个“*”就代表一小时中每分钟都执行一次的意思。                                              |
+| ，       | 代表不连续的时间。比如“0 8,12,16 * * * 命令”，就代表在每天的 8 点 0 分， 12 点 0 分， 16 点 0 分都执行一次命令 |
+| -        | 代表连续的时间范围。比如“0 5 * * 1-6 命令”，代表在周一到周六的凌晨 5 点 0 分执行命令                           |
+| */n      | 代表每隔多久执行一次。比如“*/10 * * * * 命令”，代表每隔 10 分钟就执行一遍命令                                  |
 
+（ 3）特定时间执行命令
+| 时间              | 含义                                                                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 45 22 * * * 命令  | 在 22 点 45 分执行命令                                                                                                               |
+| 0 17 * * 1 命令   | 每周 1 的 17 点 0 分执行命令                                                                                                         |
+| 0 5 1,15 * * 命令 | 每月 1 号和 15 号的凌晨 5 点 0 分执行命令                                                                                            |
+| 40 4 * * 1-5 命令 | 每周一到周五的凌晨 4 点 40 分执行命令                                                                                                |
+| */10 4 * * * 命令 | 每天的凌晨 4 点，每隔 10 分钟执行一次命令                                                                                            |
+| 0 0 1,15 * 1 命令 | 每月 1 号和 15 号，每周 1 的 0 点 0 分都会执行命令。注意：星期几和几号最好不要同时出现，因为他们定义的都是天。非常容易让管理员混乱。 |
 
+例子：
+crontab -e
+```
+*/1 * * * * echo 'hello world' >> /home/hadoop/log.txt
+```
 
-
-
-
+效果
+```
+[hadoop@hadoop01 ~]$ crontab -e
+no crontab for hadoop - using an empty one
+crontab: installing new crontab
+[hadoop@hadoop01 ~]$ crontab -l
+*/1 * * * * echo 'hello world' >> /home/hadoop/log.txt
+[hadoop@hadoop01 ~]$ tail -f /home/hadoop/log.txt
+hello world
+hello world
+hello world
+```
 
 
 
