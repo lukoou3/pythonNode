@@ -31,3 +31,29 @@ Python 3.5+
 ![](assets/markdown-img-paste-20190530001703355.png)
 
 还是可以的，哈哈！
+
+## spylon-kernel的使用
+看官网地址
+https://pypi.org/project/spylon-kernel/0.1.5/
+
+github地址
+https://github.com/Valassis-Digital-Media/spylon-kernel
+
+配置例子：
+```
+%%init_spark
+launcher.jars = ["file://some/jar.jar"]
+launcher.master = "local[4]"
+launcher.conf.spark.executor.cores = 8
+```
+
+```
+%%init_spark
+launcher.num_executors = 4
+launcher.executor_cores = 2
+launcher.driver_memory = '4g'
+launcher.conf.set("spark.sql.catalogImplementation", "hive")
+```
+
+官方的一个例子，似乎可以在同一个文件中使用scala和python
+[basic_example.ipynb](examples/basic_example.ipynb "basic_example.ipynb")
