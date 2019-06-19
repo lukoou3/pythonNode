@@ -48,4 +48,6 @@ c.NotebookApp.notebook_dir = '/home/lifengchao/jupyter notebook'  #默认工作�
 上个修改配置中jupyter_notebook_config.py添加c.NotebookApp.notebook_dir = '/home/lifengchao/jupyter notebook'即可
 
 
+## 删除指定kernel
+删除指定kernel：jupyter kernelspec remove icsharpkernel
 
