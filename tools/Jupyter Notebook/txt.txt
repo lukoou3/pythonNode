@@ -1,0 +1,33 @@
+## RDD编程进阶
+### 累加器(Accumulator)
+通常在向 Spark 传递函数时，比如使用 map() 函数或者用 filter() 传条件时，可以使用驱 动器程序中定义的变量，但是集群中运行的每个任务都会得到这些变量的一份新的副本， 更新这些副本的值也不会影响驱动器中的对应变量。 如果我们想实现所有分片处理时更新共享变量的功能，那么累加器可以实现我们想要的效果。
+
+累加器是在Spark计算操作中变量值累加起来，可以被用来实现计数器、或者求和操作。Spark原生地只支持数字类型的累加器，编程者可以添加新类型的支持。如果创建累加器时指定了名字，可就以在SparkUI界面看到。这有利于理解每个执行阶段的进程。**综合一句话来说，累加器在Driver端定义赋初始值，累加器只能在Driver端读取，在 Excutor 端更新。**
+
+
+统计集合中的0值，看一下不用累加器的情况：
+//共有5个0
+val rdd = sc.makeRDD(List(1,2,0,1,2,0,2,3,0,0,2,1,2,1,0),4)
+
+var zeroTotal = 0
+
+rdd.foreach((x) => {
+    if(x == 0)
+    {
+        zeroTotal += 1
+    }
+    println(s"excutor:zeroTotal=${zeroTotal}")  
+})
+
+println(s"driver:zeroTotal=${zeroTotal}")
+
+
+https://blog.csdn.net/Android_xue/article/details/79780463
+https://blog.csdn.net/baidu_35901646/article/details/81627812
+
+http://spark.apache.org/docs/latest/rdd-programming-guide.html#shared-variables
+
+
+
+
+
