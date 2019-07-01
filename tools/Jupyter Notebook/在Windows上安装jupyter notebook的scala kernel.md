@@ -29,3 +29,13 @@ cmd运行jupyter notebook
 
 效果：
 ![](assets/markdown-img-paste-20190514203534142.png)
+
+
+## 在linux上安装 jupyter notebook 的 scala kernel
+事实上，经过测试这个在linux中也是可用的  
+* 复制 .coursier文件夹到`/home/hadoop`目录下  
+* 复制 scala文件夹到`/usr/local/share/jupyter/kernels`目录下  
+* 编辑你刚刚复制的scala文件夹下的kernel.json文件，修改第八行：`/usr/local/share/jupyter/kernels/scala/launcher.jar`
+
+
+
