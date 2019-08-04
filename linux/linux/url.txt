@@ -1,0 +1,26 @@
+linux中sort命令
+https://www.cnblogs.com/fulucky/p/8022718.html
+
+(转)linux sort 命令详解
+https://www.cnblogs.com/liujiacai/p/7872463.html
+
+Linux sort命令详解
+https://www.cnblogs.com/ftl1012/p/sort.html
+
+Linux文件排序工具 sort 命令详解
+https://www.linuxidc.com/Linux/2017-08/146605.htm
+
+Linux wc命令
+https://www.runoob.com/linux/linux-comm-wc.html
+
+
+
+
+
+
+
+
+
+
+
+
