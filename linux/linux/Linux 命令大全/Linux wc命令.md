@@ -22,12 +22,18 @@ wc [-clw][--help][--version][文件...]
 wc testfile 
 ```
 
-使用 wc统计，结果如下：
+**使用 wc统计，结果如下**：
 ```
 $ wc testfile           # testfile文件的统计信息  
 3 92 598 testfile       # testfile文件的行数为3、单词数92、字节数598 
 ```
 其中，3 个数字分别表示testfile文件的行数、单词数，以及该文件的字节数。
+
+只统计文件的行数：
+```
+$ wc -l testfile
+3 testfile
+```
 
 如果想同时统计多个文件的信息，例如同时统计testfile、testfile_1、testfile_2，可使用如下命令：
 ```
