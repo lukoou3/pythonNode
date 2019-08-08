@@ -13,8 +13,11 @@ https://www.linuxidc.com/Linux/2017-08/146605.htm
 Linux wc命令
 https://www.runoob.com/linux/linux-comm-wc.html
 
-
-
+awk
+https://blog.csdn.net/silentwolfyh/article/details/50966593
+https://blog.csdn.net/jin970505/article/details/79056457
+https://www.linuxidc.com/Linux/2018-01/150361.htm
+https://www.linuxidc.com/Linux/2016-02/128150.htm
 
 
 
