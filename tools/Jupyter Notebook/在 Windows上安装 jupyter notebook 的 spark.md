@@ -32,6 +32,59 @@ Python 3.5+
 
 还是可以的，哈哈！
 
+### 修改spylon-kernel改DataFrame显示类pandas
+修改spylon-kernel的scala_magic.py的eval（执行scala代码）函数
+```python
+    def eval(self, code, raw):
+        """Evaluates Scala code.
+
+        Parameters
+        ----------
+        code: str
+            Code to execute
+        raw: bool
+            True to return the raw result of the evalution, False to wrap it with
+            MetaKernel classes
+
+        Returns
+        -------
+        metakernel.process_metakernel.TextOutput or metakernel.ExceptionWrapper or
+        the raw result of the evaluation
+        """
+        from IPython.display import HTML 
+        
+        intp = self._get_scala_interpreter()
+        try:
+            res = intp.interpret(code.strip())
+            if raw:
+                self.res = intp.last_result()
+                return self.res
+            else:
+                if res:
+                    if("<table border=" in res):
+                        self.res = intp.last_result()
+                        return HTML(self.res)
+                    else:
+                        return TextOutput(res)
+        except ScalaException as ex:
+            # Get the kernel response so far
+            resp = self.kernel.kernel_resp
+            # Wrap the exception for MetaKernel use
+            resp['status'] = 'error'
+            tb = ex.scala_message.split('\n')
+            first = tb[0]
+            assert isinstance(first, str)
+            eclass, _, emessage = first.partition(':')
+            return ExceptionWrapper(eclass, emessage, tb)
+```
+主要就是增加了
+```python
+                    if("<table border=" in res):
+                        self.res = intp.last_result()
+                        return HTML(self.res)
+```
+
+
 ## spylon-kernel的使用
 看官网地址
 https://pypi.org/project/spylon-kernel/0.1.5/
