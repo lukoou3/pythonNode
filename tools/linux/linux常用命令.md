@@ -19,6 +19,9 @@ ps -aux | grep tomcat
 ```
 netstat -tunlp | grep 8080
 ```
+```
+netstat -anp | grep 8080
+```
 
 ### 根据进程id查看进程占用端口，查看对应端口为8080（如果没有netstat命令，使用 yum  -y  install  net-tools安装）
 ```

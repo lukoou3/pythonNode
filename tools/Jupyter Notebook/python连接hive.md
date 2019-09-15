@@ -151,3 +151,9 @@ as_pandas(cursor)
 ```
 count
 0	6
+
+
+## python执行hive脚本
+https://github.com/1275195766/PyTestpjc/blob/0b352c1402e74d0188163b12e9ccb2e9844717d9/dw_fg_lac_cell_stay_dur_yyyymm/hqltools1.py
+
+https://github.com/kztttt/python/blob/c79d5ca0d3f8e6136a4199932cd1670b6fdd15f0/test/hqltools.py
