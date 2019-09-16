@@ -1,0 +1,14 @@
+[Python]打造一款好看又轻量的Python IDE-Sublime Text 3
+https://blog.csdn.net/Shenpibaipao/article/details/80232307
+
+sublime python环境(代码自动补全，调试python脚本等插件)
+https://blog.csdn.net/zxy987872674/article/details/54895349
+
+sublime text 3 打造python3环境（代码自动补全，运行程序，高亮显示）
+https://blog.csdn.net/zxy987872674/article/details/81707241
+
+
+
+
+Sublime text 3编辑python时出现方框的解决办法
+https://blog.csdn.net/l984794142/article/details/77161455
