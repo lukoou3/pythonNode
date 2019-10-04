@@ -213,6 +213,8 @@ findall()将返回一个匹配字符串的列表，例如['415-555-9999', '212-5
     sub(repl, string[, count=0])
 说明：在字符串 string 中找到匹配正则表达式 pattern 的所有子串，用另一个字符串 repl 进行替换。如果没有找到匹配 pattern 的串，则返回未被修改的 string。Repl 既可以是字符串也可以是一个函数。
 
+**Repl 既可以是字符串也可以是一个函数**：回调函数的参数是match对象
+
 ```python
 #!/usr/bin/env python
 import re
