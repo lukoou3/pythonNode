@@ -1,3 +1,23 @@
+## 常用的函数
+    itertools.groupby(iterable, key=None)
+用于对序列进行分组，其中，iterable 是一个可迭代对象，keyfunc 是分组函数，用于对 iterable 的连续项进行分组，如果不指定，则默认对 iterable 中的连续相同项进行分组，返回一个 (key, sub-iterator) 的迭代器。  
+注意使用此函数一定要对iterable先排序
+
+    itertools.zip_longest(*iterables[,fillvalue=none])
+zip_longest跟zip 类似，但迭代过程会持续到所有可迭代对象的元素都被迭代完。如果有指定 fillvalue，则会用其填充缺失的值，否则为 None。
+
+    itertools.count(start=0,step=1)
+返回以start为开头，步长step的无限序列迭代器
+
+    itertools.cycle(iterable)
+保存对象的副本，并无限重复返回每一个元素
+
+    itertools.accumulate(iterable[, func])
+对iterable对象内的每个元素依次做func运算，更新并输出，func要求为二目运算，详见operator模块
+
+    itertools.chain(*iterables)
+接收多个可迭代对象作为参数，将它们『连接』起来，作为一个新的迭代器返回。
+
 ## 一、itertools 模块简介
 &emsp;&emsp;我们知道，迭代器的特点是：惰性求值（Lazy evaluation），即只有当迭代至某个值时，它才会被计算，这个特点使得迭代器特别适合于遍历大文件或无限集合等，因为我们不用一次性将它们存储在内存中。
 &emsp;&emsp;Python 内置的 itertools 模块包含了一系列用来产生不同类型迭代器的函数或类，这些函数的返回都是一个迭代器，我们可以通过 for 循环来遍历取值，也可以使用 next() 来取值。
