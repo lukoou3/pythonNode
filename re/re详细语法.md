@@ -118,9 +118,10 @@ b = re.compile(r"\d+\.\d*")
 ## 三、re模块主要的功能函数：
     常用的功能函数包括：compile、search、match、split、findall（finditer）、sub（subn）
 
-### 1、search
-    re.search(pattern, string[, flags])
-    search (string[, pos[, endpos]])
+### 1、compile
+```python
+re.compile(pattern, flags=0)
+```
 作用：把正则表达式语法转化成正则表达式对象，可以用它进行匹配 match()，search()以及其他方法
 
 #### flags定义包括：
