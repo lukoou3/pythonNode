@@ -1,4 +1,5 @@
 https://www.cnblogs.com/dodoye/p/6218192.html
+[toc]
 
 ## 一、正则表达式的特殊字符：
 | 特殊字符 | 意义说明 |
@@ -28,7 +29,7 @@ https://www.cnblogs.com/dodoye/p/6218192.html
 | (?(id/name)yes-pattern&#124;no-pattern) | 如有由id或者name指定的组存在的话，将会匹配yes-pattern，否则将会匹配no-pattern，通常情况下no-pattern也可以省略。例如：(<)?(\w+@\w+(?:\.\w+)+)(?(1)>)可以匹配 '<user@host.com>' 和 'user@host.com'，但是不会匹配 '<user@host.com'。 |
 
 
-#### 正则表达式特殊序列符号：
+### 正则表达式特殊序列符号：
 | 特殊序列符号 | 意义说明 |
 | --- | --- |
 | \number | 匹配number所指的组相同的字符串。组的序号从1开始。例如：(.+) \1可以匹配'the the'和'55 55'，但不匹配'the end'。这种序列在一个正则表达式里最多可以有99个，如果number以0开头，或是有3位以上的数字，就会被当做八进制表示的字符了。同时，这个也不能用于方括号内。 |
@@ -87,7 +88,7 @@ https://www.cnblogs.com/dodoye/p/6218192.html
 'egg'
 ```
 
-### 二、正则表达式的编译标志：
+## 二、正则表达式的编译标志：
 | 标志 | 含义 |
 | ---- | ---- |
 | re.I，re.IGNORECASE | 让正则表达式忽略大小写，这样一来，[A-Z]也可以匹配小写字母了。此特性和locale无关。 |
@@ -114,15 +115,15 @@ b = re.compile(r"\d+\.\d*")
 >>> someRegexValue = re.compile('foo', re.IGNORECASE | re.DOTALL | re.VERBOSE)
 ```
 
-### 三、re模块主要的功能函数：
+## 三、re模块主要的功能函数：
     常用的功能函数包括：compile、search、match、split、findall（finditer）、sub（subn）
 
-##### 1、search
+### 1、search
     re.search(pattern, string[, flags])
     search (string[, pos[, endpos]])
 作用：把正则表达式语法转化成正则表达式对象，可以用它进行匹配 match()，search()以及其他方法
 
-###### flags定义包括：
+#### flags定义包括：
 | 标志 | 含义 |
 | ---- | ---- |
 | re.I，re.IGNORECASE | 让正则表达式忽略大小写，这样一来，[A-Z]也可以匹配小写字母了。此特性和locale无关。 |
@@ -132,7 +133,7 @@ b = re.compile(r"\d+\.\d*")
 | re.U，re.UNICODE | 让\w、\W、\b、\B、\d、\D、\s和\S依赖Unicode库。 |
 | re.X，re.VERBOSE | 运用这个标志，你可以写出可读性更好的正则表达式：除了在方括号内的和被反斜杠转义的以外的所有空白字符，都将被忽略，而且每行中，一个正常的井号后的所有字符也被忽略，这样就可以方便地在正则表达式内部写注释了。 |
 
-##### 所以如果在单个程序中多次使用表达式，则使用re.compile()并保存生成的正则表达式对象以便重用将会更有效。
+#### 所以如果在单个程序中多次使用表达式，则使用re.compile()并保存生成的正则表达式对象以便重用将会更有效。
 
 例子：
 ```python
@@ -142,7 +143,7 @@ result = prog.match(string)
 result = re.match(pattern, string)
 ```
 
-##### 2、search
+### 2、search
     re.search(pattern, string[, flags])
     search (string[, pos[, endpos]])
 作用：在字符串中查找匹配正则表达式模式的第一个位置，返回 MatchObject 的实例，如果没有找到匹配的位置，则返回 None。
@@ -152,7 +153,7 @@ result = re.match(pattern, string)
 <_sre.SRE_Match object; span=(0, 1), match='a'>
 ```
 
-##### 3、match
+### 3、match
     re.match(pattern, string[, flags])
     match(string[, pos[, endpos]])
 作用：match() 函数只在字符串的开始位置尝试匹配正则表达式，也就是只报告从位置 0 开始的匹配情况，而 search() 函数是扫描整个字符串来查找匹配。如果想要搜索整个字符串来寻找匹配，应当用 search()。
@@ -163,7 +164,7 @@ result = re.match(pattern, string)
 <_sre.SRE_Match object; span=(0, 1), match='a'>
 ```
 
-###### search（）与match（）的区别
+#### search（）与match（）的区别
 match()只匹配字符串的开头！
 
 ```python
@@ -185,7 +186,7 @@ match()只匹配字符串的开头！
 <_sre.SRE_Match object; span=(4, 5), match='X'>
 ```
 
-##### 4、findall
+### 4、findall
     re.findall(pattern, string[, flags])
     findall(string[, pos[, endpos]])
 作用：返回字符串中模式的所有非重叠匹配项，作为字符串列表。 字符串从左到右扫描，匹配按找到的顺序返回。 如果模式中存在一个或多个组，则返回组的列表; 如果该模式有多个组，这将是一个元组列表。
@@ -199,7 +200,7 @@ match()只匹配字符串的开头！
 [('192', '168', '0', '2'), ('192', '168', '0', '3')]
 ```
 
-###### 作为findall()方法的返回结果的总结，请记住下面两点：
+#### 作为findall()方法的返回结果的总结，请记住下面两点：
 ```python
 1．如果调用在一个没有分组的正则表达式上，例如\d\d\d-\d\d\d-\d\d\d\d，方法
 findall()将返回一个匹配字符串的列表，例如['415-555-9999', '212-555-0000']。
@@ -208,7 +209,7 @@ findall()将返回一个匹配字符串的列表，例如['415-555-9999', '212-5
 '555', '1122'), ('212', '555', '0000')]。
 ```
 
-##### 5、sub
+### 5、sub
     re.sub(pattern, repl, string[, count, flags])
     sub(repl, string[, count=0])
 说明：在字符串 string 中找到匹配正则表达式 pattern 的所有子串，用另一个字符串 repl 进行替换。如果没有找到匹配 pattern 的串，则返回未被修改的 string。Repl 既可以是字符串也可以是一个函数。
@@ -244,7 +245,7 @@ re.sub(r'www\.(.*)\..{3}',r'\1','hello,www.dxy.com')
 'a-110-11-b-220-22-c'
 ```
 
-##### 6、split
+### 6、split
     re.split(pattern, string[, maxsplit=0, flags=0])
     split(string[, maxsplit=0])
 由模式发生的分割字符串。如果在模式中使用捕获圆括号，则模式中所有组的文本也将作为结果列表的一部分返回。如果maxsplit不为零，则最多 发生maxsplit分割，并将其余的字符串作为列表的最后一个元素返回。
@@ -265,7 +266,7 @@ re.sub(r'www\.(.*)\..{3}',r'\1','hello,www.dxy.com')
 ['', '...', 'words', ', ', 'words', '...', '']
 ```
 
-##### 7、finditer
+### 7、finditer
     re.finditer(pattern, string[, flags])
     finditer(string[, pos[, endpos]])
 说明：和 findall 类似，在字符串中找到正则表达式所匹配的所有子串，并组成一个迭代器返回。
@@ -278,7 +279,7 @@ hello
 world
 ```
 
-##### 8、Match object对象
+### 8、Match object对象
     The result of re.match() and re.search().Match objects always have a boolean value of True.
     上面的函数中，只有match、search返回Match object，其他的函数没有
 
