@@ -378,7 +378,145 @@ Call docstring: Invoke the method.
 In [20]: client.service.masterReportTermInfoList(slaveDataList=terms,slaveid=3)
 ```
 
+### 调用接口(需要认证)
+就调用设备ip认证删除全部的接口吧。
 
+```python
+In [1]: from suds.client import Client
+
+In [2]: url = "http://10.24.40.45/func/web_main/wsdl/dac/dac_common/dac_common.wsdl"
+
+In [3]: client = Client(url, username='admin', password='admin_default')
+
+In [4]: print(client)
+
+Suds ( https://fedorahosted.org/suds/ )  version: 0.6
+
+Service ( dac_common ) tns="http://dptech/"
+   Prefixes (2)
+      ns0 = "http://dptech/"
+      ns1 = "http://schemas.xmlsoap.org/soap/encoding/"
+   Ports (1):
+      (dac_common)
+         Methods (18):
+            AddFreeIPBatch(dacWhiteIP ipList)
+            AddFreeMACBatch(dacWhiteMAC macList)
+            AddWhiteIP(dacWhiteIP info)
+            AddWhiteMAC(dacWhiteMAC info)
+            DelFreeIPAll()
+            DelFreeIPBatch(dacWhiteIP ipList)
+            DelFreeMACBatch(dacWhiteMAC macList)
+            DelWhiteIP(dacWhiteIP info)
+            DelWhiteMAC(dacWhiteMAC info)
+            addTerminalIp(umcAddIP ipinfo)
+            delAllTerminalIp()
+            delTerminalIp(umcAddIP ipinfo)
+            getFreeAuthIPList()
+            getFreeAuthMacList()
+            getUMCInfoSync()
+            releaseBlockIelds(ws-dacIeldsReleaseIP ipaddr)
+            setAllAuthPolicyAdd(dacUMCAllAuthConf info)
+            setTerminalType(dacTerminalType typeInfo)
+         Types (88):
+            ns1:Array
+            ns1:ENTITIES
+            ns1:ENTITY
+            ns1:ID
+            ns1:IDREF
+            ns1:IDREFS
+            ns1:NCName
+            ns1:NMTOKEN
+            ns1:NMTOKENS
+            ns1:NOTATION
+            ns1:Name
+            ns1:QName
+            ns1:Struct
+            ns1:anyURI
+            ns1:arrayCoordinate
+            ns1:base64
+            ns1:base64Binary
+            ns1:boolean
+            ns1:byte
+            dacAssetManage
+            dacAuthLogConfig
+            dacAvoidAuthData
+            dacAvoidAuthIP
+            dacAvoidAuthIPinfo
+            dacAvoidAuthMAC
+            dacAvoidAuthMACinfo
+            dacBoundaryAccessConf
+            dacBoundaryAccessPolicy
+            dacIPCConf
+            dacIPMACAuthConf
+            dacIeldsConf
+            dacInterFace
+            dacLinkDetection
+            dacModuleEnable
+            dacPCFeature
+            dacPCFeatureList
+            dacPCSwitch
+            dacPortalConfig
+            dacPortalLocalUser
+            dacPortalLocalUserInfo
+            dacTerminalType
+            dacTerminalTypeInfo
+            dacUMCAllAuthConf
+            dacUMCSync
+            dacUMCSyncInfo
+            dacWhiteIP
+            dacWhiteIPAuth
+            dacWhiteIPAuthList
+            dacWhiteIPAuthLuser
+            dacWhiteIPAuthLuserList
+            dacWhiteIPList
+            dacWhiteMAC
+            dacWhiteMACAuth
+            dacWhiteMACAuthList
+            dacWhiteMACList
+            ns1:date
+            ns1:dateTime
+            ns1:decimal
+            ns1:double
+            ns1:duration
+            ns1:float
+            ns1:gDay
+            ns1:gMonth
+            ns1:gMonthDay
+            ns1:gYear
+            ns1:gYearMonth
+            ns1:hexBinary
+            ns1:int
+            ns1:integer
+            ns1:language
+            ns1:long
+            ns1:negativeInteger
+            ns1:nonNegativeInteger
+            ns1:nonPositiveInteger
+            noop
+            ns1:normalizedString
+            ns1:positiveInteger
+            ns1:short
+            ns1:string
+            ns1:time
+            ns1:token
+            umcAddIP
+            umcIP
+            ns1:unsignedByte
+            ns1:unsignedInt
+            ns1:unsignedLong
+            ns1:unsignedShort
+            ws-dacIeldsReleaseIP
+
+
+
+In [5]: rst = client.service.DelFreeIPAll()
+
+In [6]: rst
+Out[6]: 0
+
+In [7]: rst is 0
+Out[7]: True
+```
 
 
 
