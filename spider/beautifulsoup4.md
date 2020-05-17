@@ -1074,3 +1074,220 @@ BeautifulSoup("<a></p>", "html.parser")
 
 不同的解析器可能影响代码执行结果,如果在分发给别人的代码中使用了 BeautifulSoup ,那么最好注明使用了哪种解析器,以减少不必要的麻烦.
 ```
+
+## 代码例子
+### zf html转md
+```python
+# coding:utf-8
+from bs4 import BeautifulSoup
+from  bs4.element import Tag, NavigableString, Comment
+import re, os
+import requests
+from urllib.parse import unquote
+import hashlib
+
+headers = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Connection': 'keep-alive',
+    'Pragma': 'no-cache',
+    'Cache-Control': 'no-cache',
+    'Accept-Encoding': 'gzip,deflate,sdch',
+    'Accept-Language': 'zh-CN,zh;q=0.8',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36'
+}
+
+def make_md5(raw):
+    """计算出一个字符串的MD5值"""
+    md5 = hashlib.md5()
+    md5.update(raw.encode())
+    return md5.hexdigest()
+
+def out_ele_text_recursive(ele, sep="", strip=True):
+    """格式化输出ele内的文本，会格式化br、p、div等添加\n"""
+    if isinstance(ele, NavigableString):
+        return ele.strip() if strip else ele.string
+    texts = []
+    pre_sibling = None
+    for child in ele.contents:
+        if pre_sibling is not None and pre_sibling.name in ("br", "p", "div"):
+            texts.append("\n")
+        pre_sibling = child
+        if child.name == "script" or child.name == "style":
+            continue
+        if isinstance(child, Tag):
+            texts.append(out_ele_text_recursive(child))
+        elif type(child) == NavigableString:
+            # NavigableString是str的子类
+            texts.append(child.strip() if strip else child.string)
+    return sep.join(texts)
+
+class ZhihuHtmlMdConvert():
+    def __init__(self, line_append = "\n\n", first_mdtitle_prefix="##"):
+        self.line_append = line_append
+        self.first_mdtitle_prefix = first_mdtitle_prefix
+
+    def convert_link(self, tag):
+        """原地转换超链接为Markdown格式"""
+        prefix = "https://link.zhihu.com/?target="
+        for link in tag.findAll("a"):
+            link_url, link_text = link.get("href", default=""), link.get_text(strip=True)
+            if prefix in link_url:
+                link_url = link_url[len(prefix):]
+            md_link = """[{1}]({0} "{1}")""".format(unquote(link_url), link_text)
+            link.replace_with(md_link)
+
+    def convert_figure(self, tag):
+        """转换知乎页面中的figure标签"""
+        for figure in tag.findAll("figure"):
+            figcaption = figure.find("figcaption")  # 图片的注释元素
+            img = figure.select_one("> img")
+            if img is None:
+                img = figure.select_one("img")
+            note = figcaption.string if figcaption else ""
+            img_url = img.get("src", "") if img else ""
+            replace_tag = Tag(name="p")
+            if note:
+                md_img = "![]({0})\n`{1}`".format(img_url, note)
+            else:
+                md_img = "![]({0})".format(img_url)
+            replace_tag.string = md_img
+            figure.replace_with(replace_tag)
+
+    def convert_img(self, tag):
+        for img in tag.findAll("img"):
+            img_url = img.get("src", "")
+            md_img = " ![]({0}) ".format(img_url)
+            img.replace_with(md_img)
+
+    def convert_math_expression(self, tag):
+        """转换知乎页面中的数学公式"""
+        prefix = "https://www.zhihu.com/equation?tex="
+        for img in tag.findAll("img", src=re.compile(r"^https://www.zhihu.com/equation\?tex=")):
+            math = img.get("src", "")[len(prefix):]
+            math = unquote(math.replace("+", "%20"))
+            math_md = "$$%s$$" % math if r"\tag" in math else "$%s$" % math
+            if r"\begin{split}" in math_md or r"\end{split}" in math_md:
+                math_md = math_md.replace(r"\begin{split}", "").replace(r"\end{split}", "")\
+                    .replace(r" &= ", " = ").replace(r"&\approx", r"\approx").replace(r"& \cdots", r"\cdots")
+                if not math_md.startswith("$$"):
+                    math_md = "$%s$" % math_md
+
+            img.replace_with(math_md)
+
+    def convert_btag(self, tag):
+        for b in tag.findAll("b"):
+            str_tags = list(filter(lambda e: type(e) == NavigableString and e.strip(), b.contents[::-1]))
+            str_last = str_tags[0] if str_tags else None
+            b.insert_before("**")
+            if str_last and str_last.strip()[-1] in ["，", ",", ";", "；", "。", "！"]:
+                str_last.replace_with( str_last.strip()[:-1] + "**" + str_last.strip()[-1] )
+            else:
+                b.insert_after("**")
+
+    def convert_htag(self, tag):
+        title_prefix = self.first_mdtitle_prefix
+        h_tags = tag.findAll(re.compile(r"^h\d$"))
+        h_names = {h_tag.name:int(h_tag.name[1:]) for h_tag in h_tags}
+        for index,(h_name, _) in enumerate(sorted(h_names.items(), key=lambda x:x[1]), start=0):
+            h_names[h_name] = index
+        # 没有h标签，转换<p><b>一、</b></p>等
+        if len(h_tags) == 0:
+            title_re = re.compile(r"^[\d一二三四五六七八]")
+            h_tags = tag.findAll( lambda ele: ele.name == "p" and ele.find("b") and title_re.match(ele.get_text(strip=True)) )
+        for h_tag in h_tags:
+            if h_tag.get_text(strip=True) == "":
+                continue
+            # 看源码相当于jquery的text()
+            h_tag.string = title_prefix + "#"*h_names.get(h_tag.name, 0) + " " + h_tag.get_text(strip=True)
+
+    def html_to_markdown(self, html, use_local_img_replace_net=False, img_path=None):
+        if use_local_img_replace_net and img_path is None:
+            raise Exception("必须设置img_path")
+
+        soup = BeautifulSoup(html, "lxml")
+        content_div = soup.select_one(".Post-RichTextContainer > div, .RichContent-inner > span")
+        if content_div is None:
+            content_div = soup.select_one(".Post-RichTextContainer > div")
+        self.convert_math_expression(content_div) # 这个必须在img转换之前
+        self.convert_figure(content_div)
+        self.convert_link(content_div)# a在img之前，img可能在a中
+        self.convert_img(content_div)
+        self.convert_htag(content_div) # 这个必须在b转换之前,h标签中可能有b标签
+        self.convert_btag(content_div)
+
+        text = self.out_tag_text_recursive(content_div)
+        if use_local_img_replace_net:
+            text = self.markdown_use_local_img(text, img_path)
+        return text
+
+    def markdown_use_local_img(self, text, img_path):
+        """将md文件中的http形式的img下载到本地并替换"""
+        def download_img(url):
+            """下载图片并返回文件名"""
+            response = requests.get(url, headers=headers)
+            suffix = ".png"
+            if url.rfind(".") > 0:
+                suffix_ = url[url.rfind("."):]
+                if suffix_ in [".jpg", ".png", ".gif"]:
+                    suffix = suffix_
+            name = make_md5(url) + suffix
+            path = os.path.join(img_path, name)
+            if not os.path.exists(path):
+                with open(path, "wb") as fp:
+                    fp.write(response.content)
+            return name
+
+        if not os.path.exists(img_path):
+            os.makedirs(img_path)
+
+        md_img_re = re.compile(r"!\[\]\((http.*?)\)")
+        imgs = set(md_img_re.findall(text))
+        print("共需转换%d张图片" % len(imgs))
+        url_names = [(url, download_img(url)) for url in imgs]
+        for url, name in url_names:
+            text = text.replace(url, "assets/" + name)
+        return text
+
+    def out_tag_text_recursive(self, tag, sep="", strip=True):
+        """格式化输出ele内的文本，会格式化br、p、div等添加\n"""
+        line_append = self.line_append
+        if isinstance(tag, NavigableString):
+            return tag.strip() if strip else tag.string
+        if tag.name == "ul" or tag.name == "ol":
+            return self.out_ul_text(tag)
+
+        texts = []
+        pre_sibling = None
+        for child in tag.contents:
+            if pre_sibling is not None and pre_sibling.name in ("br", "p", "div", "ul", "ol", "h1", "h2", "h3", "h4", "h5"):
+                # 最多连续加三个\n
+                if  "".join(texts[-4:]).endswith("\n\n") and (line_append == "\n\n" or line_append == "\n"):
+                    if not "".join(texts[-4:]).endswith("\n\n\n"):
+                        texts.append("\n")
+                else:
+                    texts.append(line_append)
+            pre_sibling = child
+            if child.name == "script" or child.name == "style":
+                continue
+            if isinstance(child, Tag):
+                texts.append(self.out_tag_text_recursive(child))
+            elif type(child) == NavigableString:
+                # NavigableString是str的子类
+                texts.append(child.strip() if strip else child.string)
+        return sep.join(texts)
+
+    def out_ul_text(self, tag):
+        lis = tag.select("> li")
+        return "    \n".join(["* " + li.get_text(strip=True) for li in lis])
+
+if __name__ == '__main__':
+    txt = """aa"""
+    with open("txt", encoding="utf-8") as fp:
+        txt = fp.read()
+    convert = ZhihuHtmlMdConvert(first_mdtitle_prefix="##")
+    txt = convert.html_to_markdown(txt, True , r"F:\assets")
+    print(txt)
+
+```
+
+
