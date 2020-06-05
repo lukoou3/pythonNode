@@ -62,3 +62,40 @@ ffmpeg -i 001.mp4 -ss 00:09:55 -to 01:42:50 -acodec copy -vcodec copy 无敌幸�
 
 ```
 
+### 提取音频
+参考网站：`https://stackoverflow.com/questions/9913032/how-can-i-extract-audio-from-video-with-ffmpeg`
+
+
+```
+ffmpeg -i 飞花令第二季.mp4 -vn -acodec copy 飞花令第二季.m4a
+
+# 不要前面的一段
+ffmpeg -i 飞花令第二季.mp4 -ss 00:00:18 -vn -acodec copy 飞花令第二季.m4a
+ffmpeg -i 飞花令第三季.mp4 -ss 00:00:16 -vn -acodec copy 飞花令第三季.m4a
+
+ffmpeg -i 飞花令第二季.mp4 -ss 00:00:18 -q:a 0 -map a 飞花令第二季.mp3
+ffmpeg -i 飞花令第三季.mp4 -ss 00:00:16 -q:a 0 -map a 飞花令第三季.mp3
+```
+
+To extract the audio stream without re-encoding:
+```
+ffmpeg -i input-video.avi -vn -acodec copy output-audio.aac
+```
+* -vn is no video.  
+* -acodec copy says use the same audio stream that's already in there.
+
+Read the output to see what codec it is, to set the right filename extension.
+
+
+To encode a high quality MP3 from an AVI best use -q:a for variable bit rate:
+```
+ffmpeg -i sample.avi -q:a 0 -map a sample.mp3
+```
+
+If you want to extract a portion of audio from a video use the -ss option to specify the starting timestamp, and the -t option to specify the encoding duration, eg from 3 minutes and 5 seconds in for 45 seconds:
+```
+ffmpeg -i sample.avi -ss 00:03:05 -t 00:00:45.0 -q:a 0 -map a sample.mp3
+```
+* The timestamps need to be in HH:MM:SS.xxx format or in seconds.  
+* If you don't specify the -t option it will go to the end.
+
