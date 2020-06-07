@@ -99,3 +99,18 @@ ffmpeg -i sample.avi -ss 00:03:05 -t 00:00:45.0 -q:a 0 -map a sample.mp3
 * The timestamps need to be in HH:MM:SS.xxx format or in seconds.  
 * If you don't specify the -t option it will go to the end.
 
+### 合并音频
+之前的提取的音频中中间有一部分不需要，需要合并一下：
+
+```
+# 提取第一段需要的音频
+ffmpeg -i 飞花令第二季.mp3 -ss 00:00:00 -to 00:24:54 -vn -acodec copy 001.mp3
+# 提取第二段需要的音频
+ffmpeg -i 飞花令第二季.mp3 -ss 00:27:52 -vn -acodec copy 002.mp3
+
+# 合并音频
+ffmpeg -i "concat:001.mp3|002.mp3" -c copy 005.mp3
+```
+
+
+

@@ -84,6 +84,67 @@ Python 3.5+
                         return HTML(self.res)
 ```
 
+### 解决Windows乱码问题
+这个工具的原理是用python调用scala的repl交互式工具，输出是从scala的repl返回的，估计打开windows的repl输出编码问题，修改一下就行。
+
+默认输出的`D:\Python37\Lib\site-packages\py4j\java_gateway.py`的JavaObject类的`toByteArray().decode("utf-8")`，其实直接调用`__str__`方法即可，此方法调用的是java的toString()方法，可以调用的java对象的方法和属性在_methods和_field_names中，可以调用的方法很少，
+
+**修改**：
+```python
+# 修改D:\Python37\Lib\site-packages\spylon_kernel\scala_interpreter.py
+# 修改class ScalaInterpreter(object)的interpret方法
+def interpret(self, code):
+    """Interprets a block of Scala code.
+
+    Follow this with a call to `last_result` to retrieve the result as a
+    Python object.
+
+    Parameters
+    ----------
+    code : str
+        Scala code to interpret
+
+    Returns
+    -------
+    str
+        String output from the scala REPL
+
+    Raises
+    ------
+    ScalaException
+        When there is a problem interpreting the code
+    """
+    # Ensure the cell is not incomplete. Same approach taken by Apache Zeppelin.
+    # https://github.com/apache/zeppelin/blob/3219218620e795769e6f65287f134b6a43e9c010/spark/src/main/java/org/apache/zeppelin/spark/SparkInterpreter.java#L1263
+    code = 'print("")\n'+code
+
+    try:
+        res = self.jimain.interpret(code, False)
+        #pyres = self.jbyteout.toByteArray().decode("utf-8")
+        # 解决乱码
+        pyres = str(self.jbyteout)
+        # The scala interpreter returns a sentinel case class member here
+        # which is typically matched via pattern matching.  Due to it
+        # having a very long namespace, we just resort to simple string
+        # matching here.
+        result = res.toString()
+        if result == "Success":
+            return pyres
+        elif result == 'Error':
+            raise ScalaException(pyres)
+        elif result == 'Incomplete':
+            raise ScalaException(pyres or '<console>: error: incomplete input')
+        return pyres
+    finally:
+        self.jbyteout.reset()
+```
+
+其实修改的就这一行：
+```python
+#pyres = self.jbyteout.toByteArray().decode("utf-8")
+# 解决乱码
+pyres = str(self.jbyteout)
+```
 
 ## spylon-kernel的使用
 看官网地址

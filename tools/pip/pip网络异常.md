@@ -31,7 +31,20 @@ Successfully installed joblib-0.14.1 scikit-learn-0.22.2.post1
 ```
 
 
+## linux配置永久生效
+```
+mkdir ~/.pip
 
+vi ~/.pip/pip.conf
+```
+内容
+```
+[global]
+index-url=https://pypi.tuna.tsinghua.edu.cn/simple
+[install]
+trusted-host=pypi.tuna.tsinghua.edu.cn
+
+```
 
 
 
