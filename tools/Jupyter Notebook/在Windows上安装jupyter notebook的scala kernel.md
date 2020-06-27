@@ -31,6 +31,65 @@ cmd运行jupyter notebook
 ![](assets/markdown-img-paste-20190514203534142.png)
 
 
+## 自定义一些配置
+### 修改coursier文件夹的路径
+修改launcher.jar中的bootstrap.properties文件
+```
+#
+#Sat Apr 08 18:18:27 CEST 2017
+bootstrap.jarDir=${user.home}/.coursier/bootstrap/1.0.0-RC1
+bootstrap.mainClass=coursier.cli.Coursier
+```
+改为
+```
+#
+#Sat Apr 08 18:18:27 CEST 2017
+bootstrap.jarDir=D:/java-apps/coursier/bootstrap/1.0.0-RC1
+bootstrap.mainClass=coursier.cli.Coursier
+
+```
+然后就可以把coursier文件夹放到对应的位置了，
+![](assets/markdown-img-paste-20200627164237610.png)
+
+### 加载额外的jar包
+他的代码经过反编译之后都是a、b、c、d等应该是经过处理了，找不到在呢设置classpath了，而且在他的maven中加入其它的依赖也不会加载。
+
+于是就想到替换他本来的jar包，把其它的依赖也加进去，方便测试。
+
+直接把jar改革名字替换上去是不行的，因为他对文件做了校验，把替换jar的校验文件也修改了修好了。使用的是`sha1` 加密，把文件的加密值算出来，把校验文件也修改了就行了。这样java的一些库也可以用notebook测试了(当然使用scala的语法)。
+
+```xml
+<dependency>
+    <groupId>commons-codec</groupId>
+    <artifactId>commons-codec</artifactId>
+    <version>1.14</version>
+    <scope>test</scope>
+</dependency>
+```
+
+```java
+package com;
+
+import org.apache.commons.codec.digest.DigestUtils;
+
+import java.io.File;
+
+import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_1;
+
+public class TestSha1 {
+    public static void main(String[] args) throws Exception {
+        File file = new File("D:\\java-apps\\coursier\\cache\\v1\\https\\repo1.maven.org\\maven2\\org\\jsoup\\jsoup\\1.10.2\\jsoup-1.10.2.jar");
+        String hex = new DigestUtils(SHA_1).digestAsHex(file);
+        System.out.println(hex);
+    }
+}
+```
+
+修改的文件：
+![](assets/markdown-img-paste-20200627181556852.png)
+
+
+
 ## 在linux上安装 jupyter notebook 的 scala kernel
 事实上，经过测试这个在linux中也是可用的  
 * 复制 .coursier文件夹到`/home/hadoop`目录下  
