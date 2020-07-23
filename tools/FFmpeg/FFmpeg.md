@@ -112,5 +112,30 @@ ffmpeg -i 飞花令第二季.mp3 -ss 00:27:52 -vn -acodec copy 002.mp3
 ffmpeg -i "concat:001.mp3|002.mp3" -c copy 005.mp3
 ```
 
+### 直接提取MP3不成功
+不知道怎么回事，下载的一些avi格式的视频提取MP3不成功，但是可以提取数wav格式的。
 
+查到可以从wav转MP3
+```
+ffmpeg -i 01_linux_hadoop_zk.avi -vn -acodec copy 01_linux_hadoop_zk.wav 
+ffmpeg -i 01_linux_hadoop_zk.wav -acodec libmp3lame 01_linux_hadoop_zk.mp3
+```
+
+这个可以一步完成：
+```
+ffmpeg -i 02_hive.avi -vn -acodec libmp3lame 02_hive.mp3
+ffmpeg -i 03_flume.avi -vn -acodec libmp3lame 03_flume.mp3
+ffmpeg -i 04_kafka.avi -vn -acodec libmp3lame 04_kafka.mp3
+ffmpeg -i 05_1.avi -vn -acodec libmp3lame 05_1.mp3
+ffmpeg -i 05_2.avi -vn -acodec libmp3lame 05_2.mp3
+ffmpeg -i "concat:05_1.mp3|05_2.mp3" -c copy 05.mp3
+ffmpeg -i 06_项目架构.avi -vn -acodec libmp3lame 06_项目架构.mp3
+ffmpeg -i 07_数仓项目总结.avi -vn -acodec libmp3lame 07_数仓项目总结.mp3
+ffmpeg -i 08_spark面试题讲解.wmv -vn -acodec libmp3lame 08_spark面试题讲解.mp3
+ffmpeg -i 09_数仓项目.avi -vn -acodec libmp3lame 09_数仓项目.mp3
+ffmpeg -i 10_项目中遇到问题.avi -vn -acodec libmp3lame 10_项目中遇到问题.mp3
+ffmpeg -i 11_项目经验1.avi -vn -acodec libmp3lame 11_项目经验1.mp3
+ffmpeg -i 12_项目经验2.avi -vn -acodec libmp3lame 12_项目经验2.mp3
+ffmpeg -i 13_项目讲解.avi -vn -acodec libmp3lame 13_项目讲解.mp3
+```
 
