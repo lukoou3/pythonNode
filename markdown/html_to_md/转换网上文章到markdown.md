@@ -683,6 +683,7 @@ list.filter(x => x.title.toLowerCase().indexOf("数据仓库") != -1).sort((a,b)
 ## 博客园文章转换
 这个代码有很多多余的，这是在知乎的基础上直接改的，很多无用的解析未删除。
 
+cnblogs_html2md_usebs.py：
 ```python
 # coding:utf-8
 from bs4 import BeautifulSoup
@@ -938,6 +939,7 @@ if __name__ == '__main__':
     print(txt)
 
 ```
+
 
 
 
