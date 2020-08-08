@@ -88,6 +88,18 @@ public class TestSha1 {
 修改的文件：
 ![](assets/markdown-img-paste-20200627181556852.png)
 
+### 修改kernelspec名字
+![](assets/markdown-img-paste-20200808102748654.png)
+![](assets/markdown-img-paste-20200808102827932.png)
+
+![](assets/markdown-img-paste-20200808103157167.png)
+
+之前建的文件打开会提示找不到kernel：
+![](assets/markdown-img-paste-20200808102943776.png)
+
+这个可以在页面上直接修改。
+
+也可以直接修改文件，这个信息是直接在文件里修改：
 
 
 ## 在linux上安装 jupyter notebook 的 scala kernel
