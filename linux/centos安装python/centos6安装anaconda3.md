@@ -70,6 +70,11 @@ conda deactivate
 source activate py_367
 ```
 
+安装对应版本的ipython
+```
+conda install -n py_367 ipython
+```
+
 ## anaconda下虚拟环境的创建
 ### 创建虚拟环境
 ```
