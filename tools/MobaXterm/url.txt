@@ -1,0 +1,12 @@
+MobaXterm详细使用教程系列一:
+https://zhuanlan.zhihu.com/p/61013117
+
+全能终端神器——MobaXterm:
+https://zhuanlan.zhihu.com/p/56341917
+
+MobaXterm基本操作：日志记录以及宏脚本：
+https://www.jianshu.com/p/c69e4e90e154
+
+MobaXterm 如何设置皮肤：
+https://jingyan.baidu.com/article/5552ef4725e1cd108efbc91b.html
+
